@@ -22,7 +22,19 @@ class Database
         $this->db_name  = getenv('DB_NAME') ?: 'cinema_db';
         $this->username = getenv('DB_USER') ?: 'root';
         $this->password = getenv('DB_PASS') ?: '';
-        $this->ca_cert  = getenv('DB_CA_CERT') ?: null;
+        
+        $ca_cert_data = getenv('DB_CA_CERT') ?: null;
+        if ($ca_cert_data) {
+            if (strpos($ca_cert_data, '-----BEGIN CERTIFICATE-----') !== false) {
+                $temp_cert = sys_get_temp_dir() . '/ca.pem';
+                file_put_contents($temp_cert, $ca_cert_data);
+                $this->ca_cert = $temp_cert;
+            } else {
+                $this->ca_cert = $ca_cert_data;
+            }
+        } else {
+            $this->ca_cert = null;
+        }
     }
 
     public function connect()
