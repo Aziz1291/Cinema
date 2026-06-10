@@ -1,5 +1,18 @@
 <?php
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// Normalize path to always start with /Cinema so local routes work on Render
+if (strpos($path, '/Cinema') !== 0) {
+    if (strpos($path, '/public') === 0) {
+        $path = '/Cinema' . substr($path, 7);
+    } else {
+        $path = '/Cinema' . ($path === '/' ? '/' : $path);
+    }
+}
+if ($path === '/Cinema/') {
+    $path = '/Cinema';
+}
+
 session_start();
 require_once __DIR__ . '/../app/models/UserModel.php';
 require_once __DIR__ . '/../app/models/entities/User.php';
