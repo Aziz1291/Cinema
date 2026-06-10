@@ -1,5 +1,8 @@
 RewriteEngine On
 
+# If the request starts with /Cinema/, strip it internally
+RewriteRule ^Cinema/(.*)$ $1 [L]
+
 # Check if the URL does NOT already contain "/public/"
 RewriteCond %{REQUEST_URI} !/public/
 
