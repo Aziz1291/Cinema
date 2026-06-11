@@ -7,11 +7,13 @@ class AuthController{
     {
         $userModel = new UserModel();
         $user = $userModel->getUserByUsernameOrEmail($_POST['username']);
-        if($user && password_verify($_POST['password'],$user->getPassword()))
-        {
-            return true;
+        if (!$user) {
+            return 'no_user';
         }
-        return false;
+        if (!password_verify($_POST['password'], $user->getPassword())) {
+            return 'wrong_password';
+        }
+        return 'success';
     }
     public function userRegister()
     {

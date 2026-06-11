@@ -1,7 +1,11 @@
 <?php
 $alertMessage = null;
 $error = $_GET['error'] ?? '';
-if ($error === 'invalid') {
+if ($error === 'no_user') {
+    $alertMessage = 'No account found with that username or email.';
+} elseif ($error === 'wrong_password') {
+    $alertMessage = 'Incorrect password. Please try again.';
+} elseif ($error === 'invalid') {
     $alertMessage = 'Invalid username or password.';
 }
 ?>

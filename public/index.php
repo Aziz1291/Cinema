@@ -56,12 +56,13 @@ switch ($path) {
     case '/Cinema/loginUser':
         require_once __DIR__ . '/../app/controllers/AuthController.php';
         $authController = new AuthController();
-        if ($authController->verifyUser()) {
+        $authResult = $authController->verifyUser();
+        if ($authResult === 'success') {
             $user = (new UserModel())->getUserByUsernameOrEmail($_POST['username']);
             $_SESSION['id'] = $user->getId();
             header('Location: /Cinema/dashboard');
         } else {
-            header('Location: /Cinema/login?error=invalid');
+            header('Location: /Cinema/login?error=' . urlencode($authResult));
         }
         break;
 
