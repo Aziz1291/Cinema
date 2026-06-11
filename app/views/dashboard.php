@@ -42,6 +42,7 @@ if (isset($_SESSION['id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard – Cinema</title>
+    <link rel="icon" type="image/png" href="/Cinema/public/favicon.png">
     <link rel="stylesheet" href="/Cinema/public/css/layout.css">
     <style>
         .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 30px; }

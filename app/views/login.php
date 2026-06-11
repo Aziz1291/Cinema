@@ -10,7 +10,8 @@ if ($error === 'invalid') {
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Login</title>
+        <title>Login – Cinema</title>
+        <link rel="icon" type="image/png" href="/Cinema/public/favicon.png">
         <link rel="stylesheet" href="/Cinema/public/css/Auth.css">
 
     </head>

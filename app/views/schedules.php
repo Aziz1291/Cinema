@@ -25,6 +25,7 @@ $error   = $_GET['error']   ?? '';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sessions – Cinema</title>
+    <link rel="icon" type="image/png" href="/Cinema/public/favicon.png">
     <link rel="stylesheet" href="/Cinema/public/css/layout.css">
 </head>
 <body>
