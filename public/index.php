@@ -13,7 +13,11 @@ if ($path === '/Cinema/') {
     $path = '/Cinema';
 }
 
+$isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+    || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => $isHttps]);
 session_start();
+require_once __DIR__ . '/../app/security.php';
 require_once __DIR__ . '/../app/models/UserModel.php';
 require_once __DIR__ . '/../app/models/entities/User.php';
 
@@ -32,6 +36,24 @@ $protectedRoutes = [
 if (in_array($path, $protectedRoutes, true) && empty($_SESSION['id'])) {
     header('Location: /Cinema/login');
     exit;
+}
+
+// State-changing routes: POST only, with a valid CSRF token
+$postOnlyRoutes = [
+    '/Cinema/loginUser', '/Cinema/registerUser', '/Cinema/reserve',
+    '/Cinema/films/create', '/Cinema/films/update', '/Cinema/films/delete',
+    '/Cinema/rooms/create', '/Cinema/rooms/update', '/Cinema/rooms/delete',
+    '/Cinema/schedules/create', '/Cinema/schedules/update', '/Cinema/schedules/delete',
+];
+if (in_array($path, $postOnlyRoutes, true)) {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        exit('Method not allowed.');
+    }
+    if (!csrf_valid()) {
+        http_response_code(403);
+        exit('Invalid or missing CSRF token. Go back, reload the page and try again.');
+    }
 }
 
 // Helper: check admin, redirect non-admins
@@ -59,6 +81,7 @@ switch ($path) {
         $authResult = $authController->verifyUser();
         if ($authResult === 'success') {
             $user = (new UserModel())->getUserByUsernameOrEmail($_POST['username']);
+            session_regenerate_id(true);
             $_SESSION['id'] = $user->getId();
             header('Location: /Cinema/dashboard');
         } else {
@@ -76,6 +99,7 @@ switch ($path) {
         $userModel      = new UserModel();
         if ($authController->userRegister()) {
             $user = $userModel->getUserByUsernameOrEmail($_POST['username']);
+            session_regenerate_id(true);
             $_SESSION['id'] = $user->getId();
             header('Location: /Cinema/dashboard');
         } else {
@@ -117,20 +141,34 @@ switch ($path) {
         require_once __DIR__ . '/../app/models/ReservationModel.php';
         $isAdminReserve = isset($_SESSION['id']) && (new UserModel())->isAdmin($_SESSION['id']);
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['id']) && !$isAdminReserve) {
-            $reservationModel = new ReservationModel();
+            $scheduleId = (int)($_POST['schedule_id'] ?? 0);
             $seatIds = $_POST['seat_ids'] ?? [];
             if (!is_array($seatIds)) $seatIds = [$seatIds];
-            
-            $successCount = 0;
-            foreach ($seatIds as $seat_id) {
-                if ($reservationModel->createReservation($_SESSION['id'], $seat_id, $_POST['schedule_id'])) {
-                    $successCount++;
+            $seatIds = array_values(array_unique(array_map('intval', $seatIds)));
+
+            $ok = false;
+            if ($scheduleId > 0 && $seatIds) {
+                require_once __DIR__ . '/../app/models/ScheduleModel.php';
+                require_once __DIR__ . '/../app/models/SeatModel.php';
+                $schedule  = (new ScheduleModel())->getScheduleById($scheduleId);
+                $seatModel = new SeatModel();
+                $valid = $schedule !== null;
+                // every seat must exist and belong to the room of the chosen session
+                foreach ($seatIds as $seatId) {
+                    $seat = $seatModel->getSeatById($seatId);
+                    if (!$seat || !$schedule || (int)$seat->getRoomId() !== (int)$schedule->getRoomId()) {
+                        $valid = false;
+                        break;
+                    }
+                }
+                if ($valid) {
+                    $ok = (new ReservationModel())->createReservations($_SESSION['id'], $seatIds, $scheduleId);
                 }
             }
-            
-            header('Location: ' . ($successCount > 0 
-                ? '/Cinema/reservations?success=1' 
-                : '/Cinema/seats?schedule_id=' . $_POST['schedule_id'] . '&error=taken'));
+
+            header('Location: ' . ($ok
+                ? '/Cinema/reservations?success=1'
+                : '/Cinema/seats?schedule_id=' . $scheduleId . '&error=taken'));
         } else {
             header('Location: /Cinema/dashboard');
         }
@@ -170,18 +208,7 @@ switch ($path) {
         requireAdmin();
         require_once __DIR__ . '/../app/models/FilmModel.php';
         // ── Handle poster upload ───────────────────────────
-        $posterFilename = '';
-        if (!empty($_FILES['poster_image']['name'])) {
-            $allowed = ['image/jpeg','image/png','image/webp','image/gif'];
-            $ftype   = mime_content_type($_FILES['poster_image']['tmp_name']);
-            if (in_array($ftype, $allowed) && $_FILES['poster_image']['size'] <= 5 * 1024 * 1024) {
-                $ext  = pathinfo($_FILES['poster_image']['name'], PATHINFO_EXTENSION);
-                $dest = __DIR__ . '/../public/assets/' . basename($_FILES['poster_image']['name']);
-                if (move_uploaded_file($_FILES['poster_image']['tmp_name'], $dest)) {
-                    $posterFilename = basename($_FILES['poster_image']['name']);
-                }
-            }
-        }
+        $posterFilename = save_poster($_FILES['poster_image'] ?? []) ?? '';
         $ok = (new FilmModel())->createFilm($_POST['title'], $_POST['duration'], $_POST['description'], $posterFilename);
         header('Location: /Cinema/films?' . ($ok ? 'success=created' : 'error=db'));
         break;
@@ -190,17 +217,7 @@ switch ($path) {
         requireAdmin();
         require_once __DIR__ . '/../app/models/FilmModel.php';
         // ── Handle poster upload ───────────────────────────
-        $posterFilename = $_POST['old_poster'] ?? ''; // keep existing by default
-        if (!empty($_FILES['poster_image']['name'])) {
-            $allowed = ['image/jpeg','image/png','image/webp','image/gif'];
-            $ftype   = mime_content_type($_FILES['poster_image']['tmp_name']);
-            if (in_array($ftype, $allowed) && $_FILES['poster_image']['size'] <= 5 * 1024 * 1024) {
-                $dest = __DIR__ . '/../public/assets/' . basename($_FILES['poster_image']['name']);
-                if (move_uploaded_file($_FILES['poster_image']['tmp_name'], $dest)) {
-                    $posterFilename = basename($_FILES['poster_image']['name']);
-                }
-            }
-        }
+        $posterFilename = save_poster($_FILES['poster_image'] ?? []) ?? basename((string)($_POST['old_poster'] ?? ''));
         $ok = (new FilmModel())->updateFilm($_POST['id'], $_POST['title'], $_POST['duration'], $_POST['description'], $posterFilename);
         header('Location: /Cinema/films?' . ($ok ? 'success=updated' : 'error=db'));
         break;

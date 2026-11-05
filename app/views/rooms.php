@@ -18,7 +18,7 @@ $error   = $_GET['error']   ?? '';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rooms – Cinema</title>
+    <title>Auditoriums &amp; Rooms – Cinema</title>
     <link rel="icon" type="image/png" href="/Cinema/public/favicon.png">
     <link rel="stylesheet" href="/Cinema/public/css/layout.css">
 </head>
@@ -27,45 +27,79 @@ $error   = $_GET['error']   ?? '';
 <?php require_once __DIR__ . '/partials/topbar.php'; ?>
 
 <main class="page">
-    <header class="page__header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+    <header class="page__header">
         <div>
-            <p class="page__eyebrow">Venue</p>
-            <h2 class="page__title">Rooms</h2>
-            <p class="page__subtitle"><?php echo $isAdmin ? 'Admin view – add, edit or delete rooms.' : 'Browse our cinema rooms.'; ?></p>
+            <p class="kicker page__eyebrow">Venue &amp; Facilities</p>
+            <h2 class="page__title">Auditorium Rooms</h2>
+            <p class="page__subtitle"><?php echo $isAdmin ? 'Admin Console &middot; Configure auditorium capacities, rows, and seating arrangements.' : 'Browse our screening halls and auditorium capacities.'; ?></p>
         </div>
         <?php if ($isAdmin): ?>
-            <a href="/Cinema/rooms/add" class="btn btn--primary" style="align-self:center;">+ Add Room</a>
+            <a href="/Cinema/rooms/add" class="btn btn--primary">+ Add Room</a>
         <?php endif; ?>
     </header>
 
-    <?php if ($success === 'created'): ?><div class="alert alert--success">Room added successfully.</div><?php endif; ?>
-    <?php if ($success === 'updated'): ?><div class="alert alert--success">Room updated successfully.</div><?php endif; ?>
-    <?php if ($success === 'deleted'): ?><div class="alert alert--success">Room deleted.</div><?php endif; ?>
-    <?php if ($error === 'db'):        ?><div class="alert alert--error">Something went wrong. Please try again.</div><?php endif; ?>
+    <?php if ($success === 'created'): ?><div class="alert alert--success">✓ Auditorium room created successfully with initialized seating.</div><?php endif; ?>
+    <?php if ($success === 'updated'): ?><div class="alert alert--success">✓ Auditorium configuration updated.</div><?php endif; ?>
+    <?php if ($success === 'deleted'): ?><div class="alert alert--success">✓ Auditorium room deleted.</div><?php endif; ?>
+    <?php if ($error === 'db'):        ?><div class="alert alert--error">⚠ Database transaction error. Please try again.</div><?php endif; ?>
 
     <?php if (empty($rooms)): ?>
-        <div class="page-card page-card--wide">
-            <h3 class="page-card__title">No rooms yet</h3>
-            <p class="page-card__text">Add rooms to the database to see them here.</p>
+        <div class="stat-card" style="text-align:center; padding:56px 24px; max-width:600px; margin:20px auto;">
+            <span style="font-size:2.5rem; margin-bottom:8px; display:block;" aria-hidden="true">🏛️</span>
+            <h3 style="margin-bottom:8px;">No auditoriums registered</h3>
+            <p class="muted" style="margin-bottom:20px;">There are currently no cinema rooms configured in the venue database.</p>
+            <?php if ($isAdmin): ?>
+                <a href="/Cinema/rooms/add" class="btn btn--primary" style="margin:0 auto;">+ Create First Room</a>
+            <?php endif; ?>
         </div>
     <?php else: ?>
-        <section class="film-grid">
-            <?php foreach ($rooms as $room): ?>
-            <article class="film-card">
-                <div class="film-card__poster" style="font-size:2.5rem;background:#1a2030;color:#334155;">🎬</div>
-                <div class="film-card__body">
-                    <h3 class="film-card__title"><?php echo htmlspecialchars((string)$room->getName(), ENT_QUOTES, 'UTF-8'); ?></h3>
-                    <p class="film-card__meta"><?php echo (int)$room->getRowsNumber(); ?> rows · <?php echo (int)$room->getSeatsNumber(); ?> total seats</p>
-                    <a href="/Cinema/seats?roomid=<?php echo $room->getId(); ?>" class="btn btn--secondary" style="margin-top:10px;">View Seats</a>
+        <section class="film-grid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));" aria-label="Auditorium List">
+            <?php foreach ($rooms as $room):
+                $rows = (int)$room->getRowsNumber();
+                $totalSeats = (int)$room->getSeatsNumber();
+                $seatsPerRow = $rows > 0 ? (int)ceil($totalSeats / $rows) : 0;
+            ?>
+            <article class="room-card">
+                <div class="room-card__header">
+                    <div>
+                        <span class="kicker" style="font-size:0.75rem;">Auditorium Hall</span>
+                        <h3 style="font-size:1.3rem; margin-top:2px;"><?php echo htmlspecialchars((string)$room->getName(), ENT_QUOTES, 'UTF-8'); ?></h3>
+                    </div>
+                    <span class="film-card__tag tone-olive" style="font-size:0.75rem;">
+                        <?php echo $totalSeats; ?> Seats
+                    </span>
+                </div>
 
-                    <?php if ($isAdmin): ?>
-                        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
-                            <a href="/Cinema/rooms/edit?id=<?php echo $room->getId(); ?>" class="btn btn--secondary" style="flex:1;text-align:center;padding:7px 10px;font-size:.8rem;">Edit</a>
-                            <form action="/Cinema/rooms/delete" method="POST" style="flex:1;margin:0;display:flex;" onsubmit="return confirm('Delete this room?');">
-                                <input type="hidden" name="id" value="<?php echo $room->getId(); ?>">
-                                <button type="submit" class="btn btn--primary" style="flex:1;padding:7px 10px;font-size:.8rem;background:#dc2626;">Delete</button>
-                            </form>
+                <div class="muted" style="font-size:0.9rem;">
+                    <span>📐 <strong><?php echo $rows; ?></strong> rows &times; ~<strong><?php echo $seatsPerRow; ?></strong> seats per row</span>
+                </div>
+
+                <!-- Mini Seating Matrix Architectural Preview -->
+                <div class="room-card__matrix-preview" aria-hidden="true" title="Physical seating layout representation">
+                    <?php 
+                    $previewRows = min(6, $rows);
+                    $previewCols = min(12, $seatsPerRow);
+                    for ($r = 0; $r < $previewRows; $r++): ?>
+                        <div style="display:flex; gap:4px;">
+                            <?php for ($c = 0; $c < $previewCols; $c++): ?>
+                                <span class="matrix-dot"></span>
+                            <?php endfor; ?>
                         </div>
+                    <?php endfor; ?>
+                    <span style="color:#64748b; font-size:0.65rem; text-transform:uppercase; letter-spacing:0.1em; margin-top:4px;">Screening Field</span>
+                </div>
+
+                <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:auto; padding-top:12px; border-top:1px solid var(--line);">
+                    <a href="/Cinema/seats?roomid=<?php echo $room->getId(); ?>" class="btn btn--secondary btn--sm" style="flex:1;">
+                        View Seating Chart
+                    </a>
+                    <?php if ($isAdmin): ?>
+                        <a href="/Cinema/rooms/edit?id=<?php echo $room->getId(); ?>" class="btn btn--outline btn--sm">Edit</a>
+                        <form action="/Cinema/rooms/delete" method="POST" style="margin:0;" onsubmit="return confirm('Delete \'<?php echo htmlspecialchars(addslashes($room->getName()), ENT_QUOTES, 'UTF-8'); ?>\'? All associated sessions and seats will be removed.');">
+                            <?php echo csrf_field(); ?>
+                            <input type="hidden" name="id" value="<?php echo $room->getId(); ?>">
+                            <button type="submit" class="btn btn--danger btn--sm">Delete</button>
+                        </form>
                     <?php endif; ?>
                 </div>
             </article>
@@ -73,6 +107,7 @@ $error   = $_GET['error']   ?? '';
         </section>
     <?php endif; ?>
 </main>
+
 <?php require_once __DIR__ . '/partials/footer.php'; ?>
 </body>
 </html>

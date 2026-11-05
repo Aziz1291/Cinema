@@ -1,4 +1,4 @@
 <footer class="footer">
-	<p>Cinema Ticketing System</p>
-	<p>Academic MVC Project - <?php echo date('Y'); ?></p>
+    <p><strong>Cinema Ticketing System</strong> &copy; <?php echo date('Y'); ?> &middot; Academic MVC Project</p>
+    <p class="muted">Crafted with warm limestone editorial design</p>
 </footer>

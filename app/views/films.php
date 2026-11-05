@@ -28,84 +28,109 @@ $error   = $_GET['error']   ?? '';
 <?php require_once __DIR__ . '/partials/topbar.php'; ?>
 
 <main class="page">
-    <header class="page__header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+    <header class="page__header">
         <div>
-            <p class="page__eyebrow">Catalogue</p>
+            <p class="kicker page__eyebrow">Theatrical Programme</p>
             <h2 class="page__title">Now Playing</h2>
-            <p class="page__subtitle"><?php echo $isAdmin ? 'Admin view – add, edit or delete films.' : 'Browse our latest movies.'; ?></p>
+            <p class="page__subtitle"><?php echo $isAdmin ? 'Admin Console &middot; Curate films, update synopses, and schedule screenings.' : 'Explore current releases and reserve your seats across all auditoriums.'; ?></p>
         </div>
         <?php if ($isAdmin): ?>
-            <a href="/Cinema/films/add" class="btn btn--primary" style="align-self:center;">+ Add Film</a>
+            <a href="/Cinema/films/add" class="btn btn--primary">+ Add Film</a>
         <?php endif; ?>
-        <div style="flex-basis:100%;margin-top:4px;">
-            <form method="GET" action="/Cinema/films" style="display:flex;gap:10px;max-width:500px;">
-                <input type="text" name="search" placeholder="Search films by name..." value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>"
-                       style="padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:#f1f5f9;outline:none;font-size:.9rem;flex:1;">
-                <button type="submit" class="btn btn--secondary">Search</button>
-            </form>
-        </div>
     </header>
 
-    <?php if ($success === 'created'): ?><div class="alert alert--success">Film added successfully.</div><?php endif; ?>
-    <?php if ($success === 'updated'): ?><div class="alert alert--success">Film updated successfully.</div><?php endif; ?>
-    <?php if ($success === 'deleted'): ?><div class="alert alert--success">Film deleted.</div><?php endif; ?>
-    <?php if ($error === 'db'):        ?><div class="alert alert--error">Something went wrong. Please try again.</div><?php endif; ?>
+    <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px;">
+        <form method="GET" action="/Cinema/films" style="display:flex; gap:10px; width:min(100%, 460px);">
+            <input type="text" name="search" class="form-input" placeholder="Search films by title or keyword..." value="<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>">
+            <button type="submit" class="btn btn--secondary">Search</button>
+            <?php if (!empty($search)): ?>
+                <a href="/Cinema/films" class="btn btn--outline" title="Clear search">Clear</a>
+            <?php endif; ?>
+        </form>
+        <?php if (!empty($search)): ?>
+            <p class="muted" style="font-size:0.9rem;">Filtering by: <strong>&ldquo;<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>&rdquo;</strong> (<?php echo count($films); ?> found)</p>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($success === 'created'): ?><div class="alert alert--success">✓ Film added successfully to the catalog.</div><?php endif; ?>
+    <?php if ($success === 'updated'): ?><div class="alert alert--success">✓ Film updated successfully.</div><?php endif; ?>
+    <?php if ($success === 'deleted'): ?><div class="alert alert--success">✓ Film removed from programme.</div><?php endif; ?>
+    <?php if ($error === 'db'):        ?><div class="alert alert--error">⚠ Database transaction error. Please try again.</div><?php endif; ?>
 
     <?php if (empty($films)): ?>
-        <div class="page-card page-card--wide">
-            <h3 class="page-card__title">No films yet</h3>
-            <p class="page-card__text">Add films to the database to see them here.</p>
+        <div class="stat-card" style="text-align:center; padding:56px 24px; max-width:600px; margin:20px auto;">
+            <span style="font-size:2.5rem; margin-bottom:8px; display:block;" aria-hidden="true">🎬</span>
+            <h3 style="margin-bottom:8px;">No films found</h3>
+            <p class="muted" style="margin-bottom:20px;">
+                <?php echo !empty($search) ? 'No films match your search query. Try searching for something else.' : 'There are currently no films in the catalogue.'; ?>
+            </p>
+            <?php if ($isAdmin): ?>
+                <a href="/Cinema/films/add" class="btn btn--primary" style="margin:0 auto;">+ Add First Film</a>
+            <?php endif; ?>
         </div>
     <?php else: ?>
-        <section class="film-grid" style="grid-template-columns: 1fr;">
+        <section class="film-grid" aria-label="Films List">
             <?php foreach ($films as $film):
                 $title   = (string) $film->getTitle();
                 $initial = $title !== '' ? strtoupper($title[0]) : 'F';
                 $poster  = $film->getPosterImage();
                 $activeSessions = (int)$film->getActiveSessionsCount();
+                $duration = (int)$film->getDuration();
             ?>
-            <article class="film-card" style="flex-direction:row;align-items:flex-start;text-align:left;padding:16px;gap:20px;">
-                <div class="film-card__poster" style="width:120px;height:180px;flex-shrink:0;margin:0;border-radius:8px;overflow:hidden;">
+            <article class="film-card">
+                <div class="film-card__poster">
                     <?php if ($poster): ?>
                         <img src="/Cinema/public/assets/<?php echo htmlspecialchars((string)$poster, ENT_QUOTES, 'UTF-8'); ?>"
-                             alt="<?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?> poster" style="width:100%;height:100%;object-fit:cover;">
+                             alt="<?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?> official poster"
+                             loading="lazy">
                     <?php else: ?>
-                        <span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#1a2030;font-size:3rem;color:#334155;"><?php echo htmlspecialchars($initial, ENT_QUOTES, 'UTF-8'); ?></span>
+                        <div style="display:grid; place-items:center; width:100%; height:100%; background:var(--tint); color:var(--muted); font-size:3.5rem; font-weight:800;">
+                            <?php echo htmlspecialchars($initial, ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
                     <?php endif; ?>
+                    <span class="film-card__badge-duration">⏱ <?php echo $duration; ?>m</span>
                 </div>
-                <div class="film-card__body" style="flex:1;display:flex;flex-direction:column;justify-content:center;">
-                    <h3 class="film-card__title" style="font-size:1.4rem;margin-bottom:6px;"><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></h3>
-                    <div style="display:flex;gap:12px;margin-bottom:12px;">
-                        <span class="film-card__meta" style="margin:0;">⏱ <?php echo (int)$film->getDuration(); ?> min</span>
-                        <span class="film-card__meta" style="margin:0;color:<?php echo $activeSessions > 0 ? '#10b981' : '#64748b'; ?>;">
-                            🎟 <?php echo $activeSessions; ?> active session<?php echo $activeSessions !== 1 ? 's' : ''; ?>
-                        </span>
-                    </div>
-                    <p class="film-card__text" style="font-size:.95rem;margin-bottom:16px;line-height:1.5;"><?php echo htmlspecialchars((string)$film->getDescription(), ENT_QUOTES, 'UTF-8'); ?></p>
 
-                    <?php if ($isAdmin): ?>
-                        <div style="display:flex;gap:8px;">
-                            <a href="/Cinema/films/edit?id=<?php echo $film->getId(); ?>" class="btn btn--secondary" style="padding:8px 16px;font-size:.85rem;">Edit Film</a>
-                            <form action="/Cinema/films/delete" method="POST" style="margin:0;display:inline-block;" onsubmit="return confirm('Delete this film?');">
+                <div class="film-card__body">
+                    <div class="film-card__meta-bar">
+                        <?php if ($activeSessions > 0): ?>
+                            <span class="film-card__tag tone-olive">
+                                &#9679; <?php echo $activeSessions; ?> active session<?php echo $activeSessions !== 1 ? 's' : ''; ?>
+                            </span>
+                        <?php else: ?>
+                            <span class="film-card__tag" style="background:var(--tint); color:var(--muted);">
+                                No upcoming sessions
+                            </span>
+                        <?php endif; ?>
+                    </div>
+
+                    <h3 class="film-card__title"><?php echo htmlspecialchars($title, ENT_QUOTES, 'UTF-8'); ?></h3>
+                    <p class="film-card__description"><?php echo htmlspecialchars((string)$film->getDescription(), ENT_QUOTES, 'UTF-8'); ?></p>
+
+                    <div class="film-card__actions">
+                        <?php if ($isAdmin): ?>
+                            <a href="/Cinema/films/edit?id=<?php echo $film->getId(); ?>" class="btn btn--secondary btn--sm">Edit</a>
+                            <form action="/Cinema/films/delete" method="POST" style="margin:0; display:inline-block;" onsubmit="return confirm('Delete \'<?php echo htmlspecialchars(addslashes($title), ENT_QUOTES, 'UTF-8'); ?>\'? All associated sessions will be removed.');">
+                                <?php echo csrf_field(); ?>
                                 <input type="hidden" name="id" value="<?php echo $film->getId(); ?>">
-                                <button type="submit" class="btn btn--primary" style="padding:8px 16px;font-size:.85rem;background:#dc2626;">Delete Film</button>
+                                <button type="submit" class="btn btn--danger btn--sm">Delete</button>
                             </form>
-                        </div>
-                    <?php else: ?>
-                        <div>
+                            <a href="/Cinema/schedules?film_id=<?php echo $film->getId(); ?>" class="btn btn--outline btn--sm" style="margin-left:auto;">Sessions</a>
+                        <?php else: ?>
                             <?php if ($activeSessions > 0): ?>
-                                <a href="/Cinema/schedules?film_id=<?php echo $film->getId(); ?>" class="btn btn--primary">Book Tickets</a>
+                                <a href="/Cinema/schedules?film_id=<?php echo $film->getId(); ?>" class="btn btn--primary btn--sm" style="width:100%;">Book Tickets &rarr;</a>
                             <?php else: ?>
-                                <span style="display:inline-block;padding:8px 16px;background:rgba(255,255,255,0.05);color:#64748b;border-radius:8px;font-size:.85rem;font-weight:600;">No sessions available</span>
+                                <span class="btn btn--outline btn--sm" style="width:100%; opacity:0.6; cursor:not-allowed;">Unavailable</span>
                             <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </article>
             <?php endforeach; ?>
         </section>
     <?php endif; ?>
 </main>
+
 <?php require_once __DIR__ . '/partials/footer.php'; ?>
 </body>
 </html>

@@ -1,432 +1,1482 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
-/* ── Reset & Base ───────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; }
+/* ── 1. Root Tokens & Palette ───────────────────────────── */
+:root {
+    /* Base Warm Stone Portfolio Palette */
+    --bg: #fafaf9;              /* Warm limestone / stone canvas */
+    --surface: #ffffff;         /* Elevated clean card surface */
+    --tint: #f1f3f7;            /* Soft warm grey-blue tint container */
+    --tint-hover: #e5e8ef;      /* Hover state on tint surfaces */
+    --ink: #1c1917;             /* Deep warm graphite text */
+    --ink-secondary: #44403c;   /* Secondary descriptive text */
+    --muted: #57534e;           /* Subdued metadata / captions */
+    --line: #e2e2df;            /* 1px precision hairline borders */
+    --line-strong: #d6d3d1;     /* Distinct structural dividers */
 
-html, body {
-    margin: 0;
-    min-height: 100%;
-    font-family: 'Inter', Helvetica, Arial, sans-serif;
-    background-color: #141414;
-    color: #e5e5e5;
-    -webkit-font-smoothing: antialiased;
+    /* Primary Brand Accents */
+    --accent: #1d4ed8;          /* Royal Ultramarine Blue */
+    --accent-hover: #1e40af;    /* Darkened ultramarine */
+    --accent-dark: #1e3a8a;     /* Deep navy blue */
+    --accent-tint: #eff6ff;     /* 10% ultramarine background wash */
+
+    /* Cinematic Domain Accents */
+    --cinema-midnight: #12100e; /* Deep warm espresso-black */
+    --cinema-stage: #1c1917;    /* Auditorium stage plane */
+    --cinema-surface: #262320;  /* Auditorium controls */
+    --cinema-amber: #b45309;    /* Warm velvet / golden amber */
+    --cinema-amber-tint: #fef3c7; /* Ticket stub highlight */
+    --cinema-ruby: #dc2626;     /* Accent red for deletions / booked state */
+    --cinema-ruby-tint: #fef2f2;
+    --cinema-emerald: #059669;  /* Confirmed state / active */
+    --cinema-emerald-tint: #ecfdf5;
+
+    /* Contextual Editorial Tones (from Portfolio Benchmark) */
+    --tone-olive-bg: #d7dcbd;
+    --tone-olive-fg: #5d6b43;
+    --tone-clay-bg: #eccdb4;
+    --tone-clay-fg: #b1532f;
+    --tone-sea-bg: #c3dcd6;
+    --tone-sea-fg: #2f6f73;
+
+    /* Typography & Radii */
+    --font: 'Outfit', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    /* Shadows (Subtle, crisp, physical) */
+    --shadow-subtle: 0 1px 3px rgba(28, 25, 23, 0.04);
+    --shadow-card: 0 4px 12px -2px rgba(28, 25, 23, 0.05);
+    --shadow-elevated: 0 12px 28px -6px rgba(28, 25, 23, 0.09);
+    --shadow-ticket: 0 16px 32px -8px rgba(28, 25, 23, 0.12);
 }
 
-/* ── Sidebar ────────────────────────────────────── */
+/* ── 2. Reset & Typography Foundations ──────────────────── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+    min-height: 100%;
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+}
+a:hover {
+    color: var(--accent-dark);
+}
+
+h1, h2, h3, h4 {
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+h1 { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 700; letter-spacing: -0.025em; }
+h2 { font-size: clamp(1.5rem, 3vw, 2.1rem); }
+h3 { font-size: 1.2rem; }
+h4 { font-size: 1rem; }
+
+p {
+    color: var(--ink-secondary);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+.kicker {
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.muted { color: var(--muted); }
+
+/* Contextual Tone Helpers */
+.tone-olive { background-color: var(--tone-olive-bg); color: var(--tone-olive-fg); }
+.tone-clay  { background-color: var(--tone-clay-bg);  color: var(--tone-clay-fg); }
+.tone-sea   { background-color: var(--tone-sea-bg);   color: var(--tone-sea-fg); }
+
+/* ── 3. Buttons & Tactile Interaction Physics ───────────── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 42px;
+    padding: 8px 18px;
+    border-radius: var(--radius-md);
+    font-family: var(--font);
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+.btn--primary {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+    box-shadow: 0 1px 2px rgba(29, 78, 216, 0.15);
+}
+.btn--primary:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: #ffffff;
+}
+
+.btn--secondary {
+    background-color: var(--surface);
+    border-color: var(--line);
+    color: var(--ink);
+}
+.btn--secondary:hover {
+    background-color: var(--tint);
+    border-color: var(--line-strong);
+    color: var(--ink);
+}
+
+.btn--outline {
+    background-color: transparent;
+    border-color: var(--line);
+    color: var(--ink);
+}
+.btn--outline:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.btn--danger {
+    background-color: var(--cinema-ruby-tint);
+    border-color: #fecaca;
+    color: var(--cinema-ruby);
+}
+.btn--danger:hover {
+    background-color: var(--cinema-ruby);
+    border-color: var(--cinema-ruby);
+    color: #ffffff;
+}
+
+.btn--success {
+    background-color: var(--cinema-emerald-tint);
+    border-color: #a7f3d0;
+    color: var(--cinema-emerald);
+}
+.btn--success:hover {
+    background-color: var(--cinema-emerald);
+    border-color: var(--cinema-emerald);
+    color: #ffffff;
+}
+
+.btn--sm {
+    min-height: 34px;
+    padding: 5px 12px;
+    font-size: 0.85rem;
+    border-radius: var(--radius-sm);
+}
+
+.btn--lg {
+    min-height: 48px;
+    padding: 12px 28px;
+    font-size: 1.05rem;
+    border-radius: var(--radius-md);
+}
+
+/* ── 4. Global App Layout & Shell ───────────────────────── */
+.app-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
 .sidebar {
     position: fixed;
-    top: 0; left: 0;
-    width: 240px;
+    top: 0;
+    left: 0;
+    width: 260px;
     height: 100vh;
-    overflow-y: auto;
-    background-color: #000000;
-    border-right: none;
-    padding: 20px 14px;
+    background-color: var(--surface);
+    border-right: 1px solid var(--line);
+    padding: 24px 18px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
     z-index: 50;
+    overflow-y: auto;
 }
 
 .sidebar__brand {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+    text-decoration: none;
+    flex: 1;
+}
+
+.sidebar__close-btn {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.sidebar__close-btn:hover {
+    color: var(--ink);
+    background: var(--tint);
 }
 
 .sidebar__logo {
-    width: 38px; height: 38px;
-    border-radius: 4px;
-    display: grid; place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: var(--radius-md);
+    background: var(--ink);
+    color: #ffffff;
+    display: grid;
+    place-items: center;
     font-weight: 800;
-    background: #e50914;
-    color: #fff;
-    font-size: 0.9rem;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
     flex-shrink: 0;
 }
 
-.sidebar__title  { margin: 0; font-size: 1rem; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;}
-.sidebar__subtitle { margin: 2px 0 0; font-size: 0.75rem; color: #b3b3b3; }
-
-.sidebar__user {
-    border: none;
-    border-radius: 4px;
-    padding: 10px 12px;
-    background: #181818;
+.sidebar__title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    margin: 0;
 }
-.sidebar__label { margin: 0; font-size: 0.72rem; color: #b3b3b3; text-transform: uppercase; letter-spacing: 1px; }
-.sidebar__name  { margin: 3px 0 0; font-size: 0.9rem; font-weight: 600; color: #ffffff; }
 
-.sidebar__nav, .sidebar__section { display: flex; flex-direction: column; gap: 2px; }
+.sidebar__subtitle {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin: 2px 0 0;
+}
+
+.sidebar__user-badge {
+    padding: 10px 12px;
+    background: var(--tint);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar__user-role {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.sidebar__user-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
 .sidebar__section-title {
-    margin: 0 0 8px;
-    font-size: 0.7rem; text-transform: uppercase;
-    letter-spacing: 1px; color: #808080;
-    padding: 0 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 10px 12px 4px;
 }
 
 .sidebar__link {
-    display: block;
-    text-decoration: none;
-    color: #b3b3b3;
-    border-radius: 4px;
-    padding: 10px 12px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.2s;
-}
-.sidebar__link:hover, .sidebar__link--active {
-    color: #ffffff;
-    font-weight: 600;
-}
-.sidebar__link--active {
-    border-left: 3px solid #e50914;
-    padding-left: 9px;
-}
-
-/* ── Topbar ─────────────────────────────────────── */
-.topbar {
-    margin-left: 240px;
-    height: 68px;
-    padding: 0 4%;
     display: flex;
     align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    color: var(--ink-secondary);
+    font-size: 0.92rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.sidebar__link:hover {
+    background-color: var(--tint);
+    color: var(--ink);
+}
+
+.sidebar__link--active {
+    background-color: var(--tint);
+    color: var(--accent);
+    font-weight: 600;
+    border-left: 3px solid var(--accent);
+    padding-left: 11px;
+}
+
+.sidebar__footer {
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Topbar */
+.topbar {
+    margin-left: 260px;
+    height: 64px;
+    padding: 0 clamp(20px, 4vw, 48px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     gap: 16px;
-    position: sticky; top: 0; z-index: 10;
-    background-color: #141414;
-    border-bottom: none;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background-color: rgba(250, 250, 249, 0.95);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
 }
 
-.topbar__left { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+.topbar__left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .topbar__breadcrumb {
-    display: flex; align-items: center; gap: 5px;
-    color: #b3b3b3; font-size: 0.72rem;
-    font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
-.topbar__breadcrumb-icon { width: 12px; height: 12px; }
-.topbar__title {
-    margin: 0;
-    font-size: 1.2rem; font-weight: 700;
-    color: #ffffff;
-    display: flex; align-items: center; gap: 8px;
+.topbar__breadcrumb span {
+    color: var(--ink);
 }
-.topbar__title-dot { display: none; }
 
-.topbar__search {
-    flex: 1; max-width: 400px; margin: 0 auto;
+.topbar__search-form {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 6px 14px;
+    width: min(100%, 360px);
+    transition: border-color 0.15s ease;
 }
-.topbar__search-field {
-    display: flex; align-items: center; gap: 10px;
-    padding: 6px 14px; border-radius: 4px;
-    background: rgba(0,0,0,0.75);
-    border: 1px solid rgba(255,255,255,0.85);
-    transition: all .2s;
+.topbar__search-form:focus-within {
+    border-color: var(--accent);
 }
-.topbar__search-field:focus-within {
-    background: #000000;
-}
-.topbar__search-icon { width: 20px; height: 20px; color: #ffffff; flex-shrink: 0; }
-.topbar__search-field input {
-    flex: 1; border: 0; outline: 0;
-    background: transparent; color: #ffffff; font-size: 0.9rem; padding: 4px 0;
-}
-.topbar__search-field input::placeholder { color: #808080; }
-.topbar__search-kbd { display: none; }
-
-.topbar__actions { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
-
-.topbar__date-chip { display: none; }
-
-.topbar__icon-btn {
-    position: relative;
-    display: grid; place-items: center;
-    width: 30px; height: 30px; border-radius: 0;
+.topbar__search-input {
     border: none;
     background: transparent;
-    color: #ffffff; cursor: pointer;
+    outline: none;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--ink);
+    width: 100%;
 }
-.topbar__icon-btn svg { width: 24px; height: 24px; }
-.topbar__icon-btn:hover { color: #b3b3b3; }
-.topbar__notif-dot {
-    position: absolute; top: 0px; right: 0px;
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #e50914; border: 2px solid #141414;
+.topbar__search-input::placeholder {
+    color: var(--muted);
+}
+
+.topbar__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 .topbar__profile {
-    display: flex; align-items: center; gap: 10px;
-    padding: 0; border-radius: 4px;
-    background: transparent;
-    border: none; cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: var(--surface);
+    border: 1px solid var(--line);
 }
+
 .topbar__avatar {
-    width: 32px; height: 32px; border-radius: 4px;
-    display: grid; place-items: center; flex-shrink: 0;
-    font-size: 0.85rem; font-weight: 800; color: #fff;
-    background: #0284c7; 
-}
-.topbar__profile-copy { display: none; } 
-
-.topbar__action {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px; border-radius: 4px;
-    text-decoration: none; font-size: 0.9rem; font-weight: 600; white-space: nowrap;
-}
-.topbar__action svg { width: 14px; height: 14px; flex-shrink: 0; }
-.topbar__action--login { background: #e50914; color: #fff; }
-.topbar__action--login:hover { background: #f40612; }
-.topbar__action--logout { background: transparent; color: #ffffff; border: 1px solid #ffffff; }
-.topbar__action--logout:hover { color: #b3b3b3; border-color: #b3b3b3; }
-
-/* ── Page layout ─────────────────────────────────── */
-.page {
-    margin-left: 240px;
-    padding: 20px 4% 60px;
-    display: grid; gap: 30px;
-    min-height: calc(100vh - 68px);
-}
-
-.page__header { display: grid; gap: 8px; }
-.page__eyebrow { display: none; }
-.page__title {
-    margin: 0;
-    font-size: 2rem;
-    color: #ffffff; font-weight: 700;
-}
-.page__subtitle { margin: 0; color: #b3b3b3; font-size: 1rem; }
-
-.page__grid {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #ffffff;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1vw;
+    place-items: center;
+    font-weight: 700;
+    font-size: 0.85rem;
 }
 
-/* Cards */
-.page-card {
-    display: grid; gap: 8px; padding: 24px;
-    border-radius: 4px;
-    background: #181818;
-    border: none;
-    text-decoration: none; color: inherit;
-    transition: transform 0.2s, box-shadow 0.2s;
+.topbar__profile-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink);
 }
-a.page-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    z-index: 2;
-}
-.page-card--muted { background: #111111; }
-.page-card--wide  { max-width: 620px; }
-.page-card__title { margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff; }
-.page-card__text  { margin: 0; color: #b3b3b3; font-size: 0.9rem; }
 
-/* Film / Room / Schedule grid */
+/* Mobile Hamburger Menu Trigger */
+.menu-trigger {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    color: var(--ink);
+    place-items: center;
+    cursor: pointer;
+}
+
+/* ── 5. Main Canvas Layout ──────────────────────────────── */
+.page {
+    margin-left: 260px;
+    padding: 32px clamp(24px, 3.5vw, 64px) 80px;
+    min-height: calc(100vh - 64px);
+    display: grid;
+    gap: 28px;
+    width: calc(100% - 260px);
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.page > * {
+    min-width: 0;
+}
+
+.page__header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--line);
+}
+
+.page__eyebrow {
+    margin-bottom: 4px;
+}
+
+.page__title {
+    font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+}
+
+.page__subtitle {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 1rem;
+    max-width: 65ch;
+}
+
+/* Alerts & Banners */
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    font-size: 0.92rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+}
+.alert--success {
+    background-color: var(--cinema-emerald-tint);
+    border-color: #a7f3d0;
+    color: var(--cinema-emerald);
+}
+.alert--error {
+    background-color: var(--cinema-ruby-tint);
+    border-color: #fecaca;
+    color: var(--cinema-ruby);
+}
+.alert--warning {
+    background-color: var(--tone-clay-bg);
+    border-color: var(--tone-clay-fg);
+    color: var(--tone-clay-fg);
+}
+
+/* Back Link */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 0.92rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+.back-link:hover {
+    color: var(--accent);
+}
+
+/* ── 6. Movie Catalog / Listing (films.php) ─────────────── */
 .film-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 1vw;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
 }
 
 .film-card {
-    display: grid;
-    grid-template-rows: 200px auto;
-    border-radius: 4px; overflow: hidden;
-    background: #181818;
-    border: none;
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-subtle);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .film-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    z-index: 2;
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-card);
 }
 
 .film-card__poster {
-    display: grid; place-items: center;
-    background: #222;
-    color: #666; font-size: 2rem; font-weight: 700;
+    position: relative;
+    aspect-ratio: 2 / 3;
+    background: var(--tint);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
 }
+
 .film-card__poster img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.film-card:hover .film-card__poster img {
+    transform: scale(1.03);
 }
 
-.film-card__body   { padding: 16px; display: grid; gap: 8px; }
-.film-card__title  { margin: 0; font-size: 1.1rem; font-weight: 700; color: #ffffff; }
-.film-card__meta   { margin: 0; font-size: 0.85rem; color: #46d369; font-weight: 600;} 
-.film-card__text   { margin: 0; font-size: 0.85rem; color: #b3b3b3; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;}
+.film-card__badge-duration {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
+    background: rgba(28, 25, 23, 0.85);
+    color: #ffffff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
 
-/* Buttons / Links */
-.btn {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 0.6rem 1.5rem; border-radius: 4px;
-    font-size: 1rem; font-weight: 600;
-    text-decoration: none; border: none; cursor: pointer;
-    transition: background 0.2s, opacity 0.2s;
+.film-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    flex: 1;
 }
-.btn--primary {
-    background: #ffffff;
-    color: #000000;
-}
-.btn--primary:hover { 
-    background: rgba(255,255,255,0.75);
-}
-.btn--secondary {
-    background: rgba(109, 109, 110, 0.7); color: #ffffff;
-}
-.btn--secondary:hover { background: rgba(109, 109, 110, 0.4); }
-.btn--success {
-    background: #e50914; color: #fff;
-}
-.btn--success:hover { background: #f40612; }
 
-/* Alert banners */
-.alert {
-    padding: 16px 20px; border-radius: 4px;
-    font-size: 0.9rem; font-weight: 500; border: none;
+.film-card__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    margin: 0;
 }
-.alert--success { background: #46d369; color: #ffffff; }
-.alert--error   { background: #e50914; color: #ffffff; }
 
-/* Back link */
-.back-link {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 1rem; color: #ffffff; text-decoration: none; font-weight: 600;
+.film-card__meta-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
 }
-.back-link:hover { text-decoration: underline; }
 
-/* ── Cinema seat grid ─────────────────────────── */
-.cinema-wrap {
-    max-width: 800px; margin: 0 auto; text-align: center;
+.film-card__tag {
+    padding: 3px 9px;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 600;
 }
-.cinema-screen {
-    background: transparent;
-    border-bottom: 4px solid #e50914;
-    color: #808080; font-size: 0.8rem; font-weight: 700;
-    letter-spacing: 2px; text-transform: uppercase;
-    padding: 0 0 10px;
-    width: 80%; margin: 0 auto 50px;
-    transform: perspective(200px) rotateX(5deg);
+
+.film-card__description {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
-.cinema-rows { display: inline-flex; flex-direction: column; gap: 8px; }
-.cinema-row  { display: flex; align-items: center; gap: 12px; }
+
+.film-card__actions {
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── 7. Showtimes & Scheduling (schedules.php) ───────────── */
+.schedules-container {
+    display: grid;
+    gap: 24px;
+}
+
+.date-rail {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.date-chip {
+    padding: 8px 18px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+.date-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.date-chip--active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #ffffff;
+}
+
+.schedule-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--shadow-subtle);
+    transition: border-color 0.15s ease;
+}
+.schedule-card:hover {
+    border-color: var(--line-strong);
+}
+
+.schedule-card__film {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.schedule-card__meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+
+.schedule-card__price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+
+.showtime-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.showtime-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: var(--radius-md);
+    background: var(--tint);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+.showtime-chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-tint);
+    transform: translateY(-1px);
+}
+.showtime-chip:active {
+    transform: scale(0.96);
+}
+
+/* ── Schedule Day-Strip Filter ──────────────────────────── */
+.schedule-day-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 4px 2px 14px;
+    margin-bottom: 24px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    max-width: 100%;
+    min-width: 0;
+    width: 100%;
+}
+.schedule-day-strip::-webkit-scrollbar {
+    height: 4px;
+}
+.schedule-day-strip::-webkit-scrollbar-thumb {
+    background: var(--line-strong);
+    border-radius: var(--radius-full);
+}
+.day-strip-btn {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 18px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-family: var(--font);
+    color: var(--ink);
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+    min-width: 95px;
+    box-shadow: var(--shadow-subtle);
+    user-select: none;
+}
+.day-strip-btn:hover {
+    border-color: var(--line-strong);
+    background: var(--tint);
+    transform: translateY(-1px);
+}
+.day-strip-btn:active {
+    transform: scale(0.97);
+}
+.day-strip-btn.is-active {
+    background: var(--ink);
+    color: #ffffff;
+    border-color: var(--ink);
+    box-shadow: 0 4px 12px rgba(28, 25, 23, 0.15);
+}
+.day-strip-btn__day {
+    font-size: 0.85rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.day-strip-btn__date {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 2px;
+}
+.day-strip-btn__count {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: var(--font-mono);
+    margin-top: 2px;
+}
+.day-strip-btn.is-active .day-strip-btn__date,
+.day-strip-btn.is-active .day-strip-btn__count {
+    color: #d6d3d1;
+}
+
+/* ── 8. Interactive Seating Chart (seats.php) ───────────── */
+.cinema-hall {
+    background-color: var(--cinema-midnight);
+    border-radius: var(--radius-xl);
+    padding: clamp(32px, 5vw, 56px) clamp(20px, 4vw, 40px) 48px;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 36px;
+    box-shadow: var(--shadow-elevated);
+    overflow-x: auto;
+}
+
+.cinema-screen-wrap {
+    width: min(100%, 640px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.cinema-screen-svg {
+    width: 100%;
+    height: 36px;
+    display: block;
+}
+
+.cinema-screen-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #94a3b8;
+}
+
+.cinema-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 820px;
+}
+
+.cinema-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
 .cinema-row__label {
-    width: 24px; text-align: center;
-    font-size: 0.9rem; font-weight: 600; color: #808080;
+    width: 24px;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
     flex-shrink: 0;
 }
-.cinema-row__seats { display: flex; gap: 8px; }
-.cinema-seat {
-    width: 32px; height: 32px;
-    border-radius: 4px 4px 2px 2px;
-    display: grid; place-items: center;
-    font-size: 0.8rem; font-weight: 700;
-    border: none;
-    transition: transform .1s;
-}
-.cinema-seat--standard { 
-    background: #333333; 
-    color: #808080; cursor: pointer; 
-}
-.cinema-seat--standard:hover { background: #444444; color: #ffffff;}
-.cinema-seat--occupied { 
-    background: #111111; 
-    color: #222222; cursor: not-allowed; 
-}
-.cinema-seat--selected { 
-    background: #e50914; 
-    color: #fff; 
-    transform: scale(1.1);
+
+.cinema-row__seats {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
 }
 
-button.cinema-seat { cursor: pointer; padding: 0; font-family: inherit; }
+/* Individual Seat Styling */
+.cinema-seat {
+    width: 36px;
+    height: 36px;
+    border-radius: 6px 6px 2px 2px;
+    display: grid;
+    place-items: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+}
+
+.cinema-seat:hover {
+    border-color: #93c5fd;
+    background: rgba(147, 197, 253, 0.25);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.cinema-seat--selected {
+    background-color: var(--accent) !important;
+    border-color: #93c5fd !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 16px rgba(29, 78, 216, 0.75);
+    transform: scale(1.08) !important;
+    font-weight: 800;
+}
+
+.cinema-seat--occupied {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    color: rgba(255, 255, 255, 0.15) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
 
 .cinema-legend {
-    display: flex; justify-content: center; gap: 24px;
-    flex-wrap: wrap; margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
 }
+
 .cinema-legend__item {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 0.9rem; color: #b3b3b3; font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #cbd5e1;
 }
+
 .cinema-legend__swatch {
-    width: 20px; height: 20px; border-radius: 2px;
-    flex-shrink: 0;
-}
-
-/* ── Ticket card ──────────────────────────────── */
-.ticket {
-    background: #181818;
-    border: none;
+    width: 18px;
+    height: 18px;
     border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Sticky Ticket Reservation Dock */
+.reservation-dock {
+    position: sticky;
+    bottom: 24px;
+    width: min(100%, 780px);
+    margin: 0 auto;
+    padding: 18px 24px;
+    border-radius: var(--radius-xl);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow-elevated);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    z-index: 30;
+}
+
+.reservation-dock__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.reservation-dock__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.reservation-dock__seats {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.reservation-dock__pricing {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.reservation-dock__price {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── 9. Dashboard (dashboard.php) ───────────────────────── */
+.stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.stat-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
     padding: 24px;
-    display: grid; gap: 12px;
-}
-.ticket__film { margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff; }
-.ticket__meta { margin: 0; font-size: 0.9rem; color: #b3b3b3; }
-.ticket__seat {
-    margin-top: 12px; padding: 16px;
-    background: #222222; border: none;
-    border-radius: 4px; text-align: center;
-}
-.ticket__seat-label { font-size: 0.8rem; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; color: #808080; }
-.ticket__seat-num   { font-size: 2.5rem; font-weight: 800; color: #ffffff; line-height: 1.2; }
-.ticket__seat-type  { display: none; }
-
-/* ── Schedule card ────────────────────────────── */
-.schedule-card {
-    background: #181818;
-    border: none;
-    border-radius: 4px; padding: 24px;
-    display: grid; gap: 12px;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-.schedule-card:hover { 
-    transform: scale(1.05); 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-    z-index: 2;
-}
-.schedule-card__film { margin: 0; font-size: 1.2rem; font-weight: 700; color: #ffffff; }
-.schedule-card__meta { margin: 0; font-size: 0.9rem; color: #b3b3b3; }
-.schedule-card__price {
-    font-size: 1.2rem; font-weight: 700; color: #46d369;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: var(--shadow-subtle);
+    position: relative;
+    overflow: hidden;
 }
 
-/* Footer */
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--accent);
+}
+.stat-card:nth-child(2)::before { background: var(--cinema-amber); }
+.stat-card:nth-child(3)::before { background: var(--tone-sea-fg); }
+
+.stat-card__label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.stat-card__value {
+    font-size: clamp(2.2rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.nav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.nav-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.15s ease;
+}
+.nav-card:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-card);
+    transform: translateY(-2px);
+}
+.nav-card:active {
+    transform: scale(0.98);
+}
+
+.nav-card__title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--ink);
+}
+
+.nav-card__text {
+    font-size: 0.92rem;
+    color: var(--muted);
+}
+
+/* Customer Spotlight Card */
+.spotlight-card {
+    background: var(--tone-sea-bg);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border: 1px solid rgba(47, 111, 115, 0.2);
+}
+
+.spotlight-card__title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--tone-sea-fg);
+}
+
+.spotlight-card__meta {
+    font-size: 0.95rem;
+    color: var(--tone-sea-fg);
+    opacity: 0.9;
+}
+
+/* ── 10. Room Management (rooms.php) ────────────────────── */
+.room-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    box-shadow: var(--shadow-subtle);
+}
+
+.room-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.room-card__matrix-preview {
+    background: var(--ink);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    display: grid;
+    gap: 4px;
+    justify-content: center;
+    place-items: center;
+}
+
+.matrix-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
+    background: #64748b;
+}
+
+/* ── 11. Digital Perforated Ticket Stubs (reservations.php) ─ */
+.ticket {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-ticket);
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ticket__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+}
+
+.ticket__brand {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.ticket__admit-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding: 3px 8px;
+    background: var(--accent-tint);
+    border-radius: var(--radius-sm);
+}
+
+.ticket__film {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    margin: 4px 0 0;
+}
+
+.ticket__meta {
+    font-size: 0.92rem;
+    color: var(--muted);
+}
+
+/* Authentic Perforated Notch Divider */
+.ticket__divider {
+    position: relative;
+    border-top: 1px dashed var(--line-strong);
+    margin: 10px 0;
+}
+
+.ticket__divider::before,
+.ticket__divider::after {
+    content: '';
+    position: absolute;
+    top: -12px;
+    width: 24px;
+    height: 24px;
+    background: var(--bg);
+    border-radius: 50%;
+    border: 1px solid var(--line);
+}
+.ticket__divider::before { left: -40px; }
+.ticket__divider::after  { right: -40px; }
+
+.ticket__seat-box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--tint);
+    border-radius: var(--radius-md);
+}
+
+.ticket__seat-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.ticket__seat-num {
+    font-size: 2.2rem;
+    font-weight: 800;
+    font-family: var(--font);
+    color: var(--accent);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+
+.ticket__barcode {
+    display: flex;
+    justify-content: center;
+    gap: 3px;
+    height: 28px;
+    margin-top: 4px;
+    opacity: 0.45;
+}
+.ticket__barcode span {
+    background: var(--ink);
+    width: 2px;
+    height: 100%;
+}
+.ticket__barcode span:nth-child(2n) { width: 4px; }
+.ticket__barcode span:nth-child(3n) { width: 1px; }
+
+/* ── 12. Editorial Form Controls & Cards ─────────────────── */
+.form-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-lg);
+    padding: clamp(24px, 4vw, 36px);
+    max-width: 620px;
+    box-shadow: var(--shadow-subtle);
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+}
+
+.form-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.form-hint {
+    font-size: 0.8rem;
+    color: var(--muted);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 0.95rem;
+    transition: all 0.15s ease;
+    outline: none;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+/* ── 13. Footer ─────────────────────────────────────────── */
 .footer {
-    margin-left: 240px;
-    border-top: none;
-    background: #141414;
-    color: #808080; font-size: 0.85rem;
-    padding: 20px 4%;
-    display: flex; justify-content: space-between; gap: 8px;
+    margin-left: 260px;
+    padding: 24px clamp(20px, 4vw, 48px);
+    border-top: 1px solid var(--line);
+    background-color: var(--bg);
+    color: var(--muted);
+    font-size: 0.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
 }
-.footer p { margin: 0; }
 
-/* Form inputs */
-input[type="text"], input[type="number"], input[type="datetime-local"], select {
-    padding: 14px 16px !important; border-radius: 4px !important;
-    border: none !important; background: #333333 !important;
-    color: #ffffff !important; font-size: 1rem !important; font-family: inherit !important;
-    font-weight: 400 !important;
-}
-input:focus, select:focus {
-    background: #444444 !important;
-    outline: 2px solid #ffffff !important;
-    outline-offset: 2px;
-}
-label { font-weight: 500 !important; color: #b3b3b3 !important; font-size: 0.9rem !important; }
+/* ── 14. Responsive Layout Breakpoints ──────────────────── */
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: var(--shadow-elevated);
+    }
+    .sidebar.is-open {
+        transform: translateX(0);
+    }
 
-/* ── Responsive ──────────────────────────────── */
-@media (max-width: 900px) {
-    .sidebar { position: relative; width: 100%; height: auto; border-bottom: 1px solid #333; }
-    .topbar  { margin-left: 0; height: auto; flex-wrap: wrap; padding: 16px 4%; }
-    .topbar__search { width: 100%; max-width: 100%; order: 3; }
-    .page    { margin-left: 0; padding: 20px 4%; }
-    .footer  { margin-left: 0; }
+    .sidebar__close-btn {
+        display: grid;
+        place-items: center;
+    }
+
+    .menu-trigger {
+        display: grid;
+    }
+
+    .topbar {
+        margin-left: 0;
+        padding: 0 16px;
+    }
+
+    .topbar__search-form {
+        display: none;
+    }
+
+    .page {
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 24px 16px 80px;
+    }
+
+    .footer {
+        margin-left: 0;
+        padding: 16px;
+    }
 }
-@media (max-width: 600px) {
-    .page { padding: 16px 4%; }
+
+@media (max-width: 640px) {
+    .topbar__profile-name {
+        display: none;
+    }
+    .topbar__breadcrumb {
+        font-size: 0.72rem;
+    }
+    .film-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+    }
+    .cinema-seat {
+        width: 30px;
+        height: 30px;
+        font-size: 0.7rem;
+    }
+    .reservation-dock {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .reservation-dock .btn {
+        width: 100%;
+    }
+}
+
+/* ── 15. Accessibility & Motion Preferences ─────────────── */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    .btn:active, .cinema-seat:hover, .film-card:hover .film-card__poster img {
+        transform: none !important;
+    }
+}
+
+/* ── 16. Print Stylesheet ───────────────────────────────── */
+@media print {
+    .sidebar, .topbar, .footer, .btn, .page__eyebrow {
+        display: none !important;
+    }
+    .page {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    .ticket {
+        box-shadow: none !important;
+        border: 2px solid #000 !important;
+        page-break-inside: avoid;
+    }
+    .ticket__divider::before, .ticket__divider::after {
+        display: none !important;
+    }
 }

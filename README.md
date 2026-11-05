@@ -46,3 +46,11 @@ Vous pouvez bien sûr créer de nouveaux comptes utilisateurs depuis la page d'i
 ## 🛠 Note sur les spécifications
 - Le projet remplit toutes les exigences fonctionnelles des Sprints 1 à 5 du cahier des charges (Anti-surbooking, Session Sécurisée, Hashage de mots de passe, validations d'âge, contraintes de cohérence SQL).
 - **Déviation volontaire :** La spécification initiale demandait une colonne `type` (Standard, VIP) dans la table `seats`. Cette fonctionnalité a été retirée à la demande du client pour unifier les places. Le code et la base de données reflètent cette optimisation.
+
+## 🛡 Sécurité
+- Mots de passe hachés (`password_hash` / `password_verify`), identifiant de session régénéré à la connexion, cookie de session `HttpOnly` + `SameSite=Lax`.
+- Toutes les requêtes SQL sont préparées ; les routes d'administration passent par `requireAdmin()`.
+- Les routes qui modifient des données n'acceptent que `POST` et exigent un jeton CSRF (`app/security.php`).
+- Réservation « tout ou rien » dans une transaction ; chaque siège doit appartenir à la salle de la séance. La contrainte `UNIQUE (schedule_id, seat_id)` empêche le surbooking en base.
+- Les affiches téléversées sont renommées (nom aléatoire, extension déduite du type MIME détecté).
+- **Pensez à changer le mot de passe du compte `admin` avant tout déploiement public.**
