@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
+.skip-link { position: fixed; top: .5rem; left: .5rem; z-index: 9999; padding: .7rem 1rem; background: #fff; color: #111; transform: translateY(-200%); }
+.skip-link:focus { transform: translateY(0); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
 /* ── 1. Root Tokens & Palette ───────────────────────────── */
 :root {
     /* Base Warm Stone Portfolio Palette */

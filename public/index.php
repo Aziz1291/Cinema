@@ -13,6 +13,11 @@ if ($path === '/Cinema/') {
     $path = '/Cinema';
 }
 
+// Only the public demo entry is intended for indexing, not account or admin pages.
+if ($path !== '/Cinema') {
+    header('X-Robots-Tag: noindex, nofollow', true);
+}
+
 $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
     || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
 session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => $isHttps]);

@@ -20,7 +20,7 @@ if (isset($currentUser) && $currentUser) {
 ?>
 <header class="topbar">
     <div class="topbar__left">
-        <button type="button" class="menu-trigger" id="menuTrigger" aria-label="Toggle navigation menu" onclick="document.getElementById('appSidebar').classList.toggle('is-open')">
+        <button type="button" class="menu-trigger" id="menuTrigger" aria-label="Toggle navigation menu" aria-controls="appSidebar" aria-expanded="false" onclick="this.setAttribute('aria-expanded', document.getElementById('appSidebar').classList.toggle('is-open'))">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
         <div class="topbar__breadcrumb">

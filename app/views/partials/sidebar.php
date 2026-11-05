@@ -24,6 +24,7 @@ function getActive($path, $uri) {
 }
 ?>
 
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <aside class="sidebar" id="appSidebar" aria-label="Main Navigation">
     <div style="display:flex; justify-content:space-between; align-items:center;">
         <a href="/Cinema/dashboard" class="sidebar__brand">
@@ -33,7 +34,7 @@ function getActive($path, $uri) {
                 <p class="sidebar__subtitle">Ticketing System</p>
             </div>
         </a>
-        <button type="button" class="sidebar__close-btn" aria-label="Close Navigation" onclick="document.getElementById('appSidebar').classList.remove('is-open')">
+        <button type="button" class="sidebar__close-btn" aria-label="Close Navigation" onclick="document.getElementById('appSidebar').classList.remove('is-open'); document.getElementById('menuTrigger').setAttribute('aria-expanded', 'false'); document.getElementById('menuTrigger').focus()">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
     </div>

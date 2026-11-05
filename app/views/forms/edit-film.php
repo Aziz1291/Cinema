@@ -17,13 +17,15 @@ $currentPoster = $film->getPosterImage();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Film – Cinema Administration</title>
     <link rel="icon" type="image/png" href="/Cinema/public/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/Cinema/public/css/layout.css">
 </head>
 <body>
 <?php require_once __DIR__ . '/../partials/sidebar.php'; ?>
 <?php require_once __DIR__ . '/../partials/topbar.php'; ?>
 
-<main class="page">
+<main class="page" id="main-content" tabindex="-1">
     <header class="page__header">
         <div>
             <p class="kicker page__eyebrow">Catalogue Administration</p>

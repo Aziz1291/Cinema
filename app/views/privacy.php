@@ -4,9 +4,22 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php if ($showAcknowledgement && $path === '/Cinema'): ?>
+    <meta name="description" content="Explore an academic cinema ticketing demo with screenings, seat selection and an administration dashboard.">
+    <link rel="canonical" href="https://azizkouki.com/projects/cinema">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Cinema Ticketing | Aziz Kouki">
+    <meta property="og:description" content="Explore an academic cinema ticketing demo with screenings, seat selection and an administration dashboard.">
+    <meta property="og:url" content="https://azizkouki.com/projects/cinema">
+    <meta property="og:image" content="https://azizkouki.com/work/cinema/admin.webp">
+    <meta property="og:image:alt" content="Cinema ticketing demo management dashboard">
+    <meta name="twitter:card" content="summary_large_image">
+    <title>Cinema Ticketing Demo | Aziz Kouki</title>
+    <?php else: ?>
     <meta name="robots" content="noindex, nofollow">
     <meta name="description" content="Privacy and essential cookie information for the Cinema demonstration application.">
     <title>Privacy notice | Cinema demo</title>
+    <?php endif; ?>
     <style>
         :root { color-scheme: dark; font-family: system-ui, sans-serif; background: #101017; color: #f4f1f2; }
         body { margin: 0; line-height: 1.65; }
@@ -29,7 +42,7 @@
     <h2>Cookies and session security</h2>
     <p>The application uses a PHP session cookie to maintain your session, remember this acknowledgement and support security checks on forms. The session cookie is set when this notice is loaded. The application code does not configure analytics or advertising cookies. Clearing the session cookie ends your session and you will be asked to acknowledge the notice again.</p>
     <h2>Hosting and requests</h2>
-    <p>The application is hosted on Render and uses an Aiven-hosted database. Hosting and network providers may process technical request information, such as IP addresses and server logs, as part of operating their services. Their practices and retention periods are governed by their own policies.</p>
+    <p>The application is hosted on Render and uses an Aiven-hosted database. The interface loads fonts from Google Fonts, which receives requests from your browser. Hosting and network providers may process technical request information, such as IP addresses and server logs, as part of operating their services. Their practices and retention periods are governed by their own policies.</p>
     <h2>Retention and contact</h2>
     <p>Information submitted to the demo can remain in its database; there is no automatic deletion period specified in the application. For questions or a request concerning demo data, contact <a href="mailto:aziz@azizkouki.com">aziz@azizkouki.com</a>.</p>
     <?php if ($showAcknowledgement): ?>

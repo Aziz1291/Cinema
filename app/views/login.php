@@ -16,6 +16,8 @@ if ($error === 'no_user') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In – Cinema</title>
     <link rel="icon" type="image/png" href="/Cinema/public/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/Cinema/public/css/Auth.css">
 </head>
 <body>
@@ -26,8 +28,8 @@ if ($error === 'no_user') {
                 <span class="auth-card__brand-text">Cinema Ticketing</span>
             </div>
 
-            <h2 class="auth-card__title">Sign in</h2>
-            <p class="auth-card__subtitle">Welcome back. Enter your account details to continue.</p>
+            <h1 class="auth-card__title">Sign in</h1>
+            <p class="auth-card__subtitle">Explore the academic demo with a shared account below. Changes may be visible to other visitors; please avoid real personal information and reused passwords.</p>
 
             <?php if ($alertMessage): ?>
                 <div class="auth-card__alert auth-card__alert--error" role="alert">

@@ -12,6 +12,8 @@ if ($error === 'validation') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account – Cinema</title>
     <link rel="icon" type="image/png" href="/Cinema/public/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/Cinema/public/css/Auth.css">
 </head>
 <body>
@@ -22,7 +24,7 @@ if ($error === 'validation') {
                 <span class="auth-card__brand-text">Cinema Ticketing</span>
             </div>
 
-            <h2 class="auth-card__title">Create Account</h2>
+            <h1 class="auth-card__title">Create Account</h1>
             <p class="auth-card__subtitle">Join to reserve seats, review showtimes, and access your tickets.</p>
 
             <?php if ($alertMessage): ?>
