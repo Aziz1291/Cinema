@@ -78,6 +78,7 @@ if ($error === 'no_user') {
                     <a href="/Cinema/register">Create Account</a>
                 </div>
             </form>
+            <p class="auth-card__footer"><a href="/Cinema/privacy">Privacy and cookies</a></p>
         </div>
     </main>
 

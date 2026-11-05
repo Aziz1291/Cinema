@@ -18,6 +18,31 @@ $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
 session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax', 'secure' => $isHttps]);
 session_start();
 require_once __DIR__ . '/../app/security.php';
+
+// The demo notice is available without an account and acknowledgement is
+// remembered only for this PHP session. No optional tracking is enabled here.
+if ($path === '/Cinema/privacy') {
+    require __DIR__ . '/../app/views/privacy.php';
+    exit;
+}
+if ($path === '/Cinema/acknowledge-privacy') {
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        http_response_code(405);
+        exit('Method not allowed.');
+    }
+    if (!csrf_valid()) {
+        http_response_code(403);
+        exit('Invalid or expired request. Please reload the notice and try again.');
+    }
+    $_SESSION['privacy_acknowledged'] = true;
+    header('Location: /Cinema/');
+    exit;
+}
+if (empty($_SESSION['privacy_acknowledged'])) {
+    $showAcknowledgement = true;
+    require __DIR__ . '/../app/views/privacy.php';
+    exit;
+}
 require_once __DIR__ . '/../app/models/UserModel.php';
 require_once __DIR__ . '/../app/models/entities/User.php';
 
