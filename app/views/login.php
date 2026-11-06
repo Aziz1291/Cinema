@@ -60,14 +60,14 @@ if ($error === 'no_user') {
                     <div class="demo-accounts__grid">
                         <div class="demo-account-pill">
                             <div class="demo-account-pill__info">
-                                <span class="demo-account-pill__role role-admin">&#x1F6E1;&#xFE0F; Administrator</span>
+                                <span class="demo-account-pill__role role-admin">Administrator</span>
                                 <span class="demo-account-pill__name">Super Admin (<code>admin</code>)</span>
                             </div>
                             <button type="button" class="demo-account-pill__btn" onclick="fillDemo('admin', 'admin123')">Use</button>
                         </div>
                         <div class="demo-account-pill">
                             <div class="demo-account-pill__info">
-                                <span class="demo-account-pill__role role-user">&#x1F464; Customer</span>
+                                <span class="demo-account-pill__role role-user">Customer</span>
                                 <span class="demo-account-pill__name">John Doe (<code>john_doe</code>)</span>
                             </div>
                             <button type="button" class="demo-account-pill__btn" onclick="fillDemo('john_doe', 'user123')">Use</button>

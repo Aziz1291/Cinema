@@ -1,4 +1,7 @@
 <?php
+// Keep application errors in server logs instead of exposing paths and queries.
+ini_set('display_errors', '0');
+ini_set('log_errors', '1');
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // Normalize path to always start with /Cinema so local routes work on Render
@@ -39,13 +42,16 @@ if ($path === '/Cinema/acknowledge-privacy') {
         http_response_code(403);
         exit('Invalid or expired request. Please reload the notice and try again.');
     }
+    if (($_POST['privacy_acknowledgement'] ?? '') !== 'yes') {
+        http_response_code(400);
+        exit('Please read and acknowledge the privacy notice.');
+    }
     $_SESSION['privacy_acknowledged'] = true;
     header('Location: /Cinema/');
     exit;
 }
 if (empty($_SESSION['privacy_acknowledged'])) {
-    $showAcknowledgement = true;
-    require __DIR__ . '/../app/views/privacy.php';
+    require __DIR__ . '/../app/views/privacy-gate.php';
     exit;
 }
 require_once __DIR__ . '/../app/models/UserModel.php';

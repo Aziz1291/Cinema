@@ -61,7 +61,7 @@ $error   = $_GET['error']   ?? '';
 
     <?php if (empty($films)): ?>
         <div class="stat-card" style="text-align:center; padding:56px 24px; max-width:600px; margin:20px auto;">
-            <span style="font-size:2.5rem; margin-bottom:8px; display:block;" aria-hidden="true">🎬</span>
+            
             <h3 style="margin-bottom:8px;">No films found</h3>
             <p class="muted" style="margin-bottom:20px;">
                 <?php echo !empty($search) ? 'No films match your search query. Try searching for something else.' : 'There are currently no films in the catalogue.'; ?>

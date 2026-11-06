@@ -47,7 +47,7 @@ $error   = $_GET['error']   ?? '';
 
     <?php if (empty($rooms)): ?>
         <div class="stat-card" style="text-align:center; padding:56px 24px; max-width:600px; margin:20px auto;">
-            <span style="font-size:2.5rem; margin-bottom:8px; display:block;" aria-hidden="true">🏛️</span>
+            
             <h3 style="margin-bottom:8px;">No auditoriums registered</h3>
             <p class="muted" style="margin-bottom:20px;">There are currently no cinema rooms configured in the venue database.</p>
             <?php if ($isAdmin): ?>
@@ -73,7 +73,7 @@ $error   = $_GET['error']   ?? '';
                 </div>
 
                 <div class="muted" style="font-size:0.9rem;">
-                    <span>📐 <strong><?php echo $rows; ?></strong> rows &times; ~<strong><?php echo $seatsPerRow; ?></strong> seats per row</span>
+                    <span> <strong><?php echo $rows; ?></strong> rows &times; ~<strong><?php echo $seatsPerRow; ?></strong> seats per row</span>
                 </div>
 
                 <!-- Mini Seating Matrix Architectural Preview -->

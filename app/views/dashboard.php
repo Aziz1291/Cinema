@@ -67,7 +67,7 @@ if (isset($_SESSION['id'])) {
             </p>
         </div>
         <div style="font-size:0.9rem; font-weight:600; color:var(--muted); background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-full); padding:6px 16px;">
-            📅 <?php echo date('l, F j, Y'); ?>
+             <?php echo date('l, F j, Y'); ?>
         </div>
     </header>
 
@@ -101,22 +101,22 @@ if (isset($_SESSION['id'])) {
             <h3 style="margin-bottom:14px; font-size:1.1rem; letter-spacing:-0.01em;">Administrative Operations</h3>
             <section class="nav-grid">
                 <a class="nav-card" href="/Cinema/films">
-                    <span style="font-size:1.8rem;" aria-hidden="true">🎬</span>
+                    
                     <h4 class="nav-card__title">Manage Films</h4>
                     <p class="nav-card__text">Add new releases, update synopses, and manage posters.</p>
                 </a>
                 <a class="nav-card" href="/Cinema/rooms">
-                    <span style="font-size:1.8rem;" aria-hidden="true">🏛️</span>
+                    
                     <h4 class="nav-card__title">Auditorium Rooms</h4>
                     <p class="nav-card__text">Configure seating matrices, rows, and total room capacity.</p>
                 </a>
                 <a class="nav-card" href="/Cinema/schedules">
-                    <span style="font-size:1.8rem;" aria-hidden="true">📅</span>
+                    
                     <h4 class="nav-card__title">Screening Sessions</h4>
                     <p class="nav-card__text">Programme movie showtimes and verify 15-minute gap rules.</p>
                 </a>
                 <a class="nav-card" href="/Cinema/reservations">
-                    <span style="font-size:1.8rem;" aria-hidden="true">🎟️</span>
+                    
                     <h4 class="nav-card__title">Customer Bookings</h4>
                     <p class="nav-card__text">Inspect confirmed reservations, ticket stubs, and seat occupancies.</p>
                 </a>
@@ -152,7 +152,7 @@ if (isset($_SESSION['id'])) {
                 <span class="kicker" style="color:var(--tone-sea-fg); font-size:0.75rem;">Your Next Theatrical Experience</span>
                 <h3 class="spotlight-card__title" style="margin:4px 0;"><?php echo htmlspecialchars((string)$nr->getFilmTitle(), ENT_QUOTES, 'UTF-8'); ?></h3>
                 <p class="spotlight-card__meta">
-                    🏛️ <?php echo htmlspecialchars((string)$nr->getRoomName(), ENT_QUOTES, 'UTF-8'); ?> &middot;
+                     <?php echo htmlspecialchars((string)$nr->getRoomName(), ENT_QUOTES, 'UTF-8'); ?> &middot;
                     Seat <strong><?php echo htmlspecialchars((string)$nr->getRowLetter() . $nr->getSeatNumber(), ENT_QUOTES, 'UTF-8'); ?></strong> &middot;
                     Starts <?php echo date('D, M j &middot; H:i', strtotime((string)$nr->getStartTime())); ?>
                 </p>
@@ -166,17 +166,17 @@ if (isset($_SESSION['id'])) {
             <h3 style="margin-bottom:14px; font-size:1.1rem; letter-spacing:-0.01em;">Explore Programme</h3>
             <section class="nav-grid">
                 <a class="nav-card" href="/Cinema/films">
-                    <span style="font-size:1.8rem;" aria-hidden="true">🎬</span>
+                    
                     <h4 class="nav-card__title">Now Playing</h4>
                     <p class="nav-card__text">Browse the theatrical catalog and select a movie.</p>
                 </a>
                 <a class="nav-card" href="/Cinema/schedules">
-                    <span style="font-size:1.8rem;" aria-hidden="true">🕐</span>
+                    
                     <h4 class="nav-card__title">Sessions &amp; Times</h4>
                     <p class="nav-card__text">Check upcoming showtimes and choose the best slot.</p>
                 </a>
                 <a class="nav-card" href="/Cinema/reservations">
-                    <span style="font-size:1.8rem;" aria-hidden="true">🎟️</span>
+                    
                     <h4 class="nav-card__title">My Reservations</h4>
                     <p class="nav-card__text">Access your digital ticket stubs and seat numbers.</p>
                 </a>

@@ -34,7 +34,7 @@ class ReservationModel
     {
         $query = '
             SELECT res.*, f.title as film_title, f.poster_image, r.name as room_name, s.start_time, s.ticket_price, st.row_letter, st.seat_number,
-                   CONCAT(u.first_name, " ", u.last_name) as customer_name, u.username as user_name, u.email as user_email
+                   CONCAT(u.first_name, \' \', u.last_name) as customer_name, u.username as user_name, u.email as user_email
             FROM reservations res
             JOIN schedules s ON res.schedule_id = s.id
             JOIN films f ON s.film_id = f.id

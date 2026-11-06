@@ -61,8 +61,9 @@ class Database
         try {
             $this->connection = new PDO($dsn, $this->username, $this->password, $options);
         } catch (PDOException $e) {
-            echo 'Connection Error: ' . $e->getMessage();
-            die();
+            error_log('Cinema database connection failed: ' . $e->getMessage());
+            http_response_code(503);
+            exit('The demo is temporarily unavailable. Please try again later.');
         }
 
         return $this->connection;

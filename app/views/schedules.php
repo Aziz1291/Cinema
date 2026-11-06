@@ -77,7 +77,7 @@ $selectedDate = $_GET['date'] ?? 'all';
 
     <?php if (empty($schedules)): ?>
         <div class="stat-card" style="text-align:center; padding:56px 24px; max-width:600px; margin:20px auto;">
-            <span style="font-size:2.5rem; margin-bottom:8px; display:block;" aria-hidden="true">📅</span>
+            
             <h3 style="margin-bottom:8px;">No sessions scheduled</h3>
             <p class="muted" style="margin-bottom:20px;">
                 <?php echo $film ? 'There are currently no upcoming showtimes for this film.' : 'No screenings have been programmed yet across our auditoriums.'; ?>
@@ -121,13 +121,13 @@ $selectedDate = $_GET['date'] ?? 'all';
             ?>
             <article class="schedule-card" data-date="<?php echo $schedDate; ?>">
                 <div>
-                    <span class="kicker" style="font-size:0.75rem;">🏛️ <?php echo htmlspecialchars($roomName, ENT_QUOTES, 'UTF-8'); ?></span>
+                    <span class="kicker" style="font-size:0.75rem;"> <?php echo htmlspecialchars($roomName, ENT_QUOTES, 'UTF-8'); ?></span>
                     <h3 class="schedule-card__film" style="margin-top:4px;"><?php echo htmlspecialchars($filmTitle, ENT_QUOTES, 'UTF-8'); ?></h3>
                 </div>
 
                 <div class="schedule-card__meta-row">
                     <span style="font-weight:600; color:var(--ink);">
-                        🕐 <?php echo date('D, M j', $startTime) . ' · ' . date('H:i', $startTime); ?>
+                         <?php echo date('D, M j', $startTime) . ' · ' . date('H:i', $startTime); ?>
                     </span>
                     <span class="muted" style="font-size:0.85rem;">
                         (Ends ~<?php echo date('H:i', $endTime); ?>)

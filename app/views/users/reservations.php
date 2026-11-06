@@ -55,7 +55,7 @@ if ($isAdmin) {
             <div style="display:flex; gap:10px; align-items:center;">
                 <?php if (!empty($reservations)): ?>
                     <button type="button" class="btn btn--secondary" onclick="window.print()">
-                        🖨️ Print Guest List
+                         Print Guest List
                     </button>
                 <?php endif; ?>
             </div>
@@ -96,7 +96,7 @@ if ($isAdmin) {
 
         <?php if (empty($reservations)): ?>
             <div class="stat-card" style="text-align:center; padding:56px 24px; max-width:600px; margin:20px auto;">
-                <span style="font-size:2.5rem; margin-bottom:8px; display:block;" aria-hidden="true">🎟️</span>
+                
                 <h3 style="margin-bottom:8px;">No reservations found</h3>
                 <p class="muted" style="margin-bottom:20px;">
                     <?php echo !empty($search) ? 'No bookings match your search query. Try another term.' : 'There are currently no customer reservations in the database.'; ?>
@@ -150,11 +150,11 @@ if ($isAdmin) {
                                 <td style="padding:16px 18px;">
                                     <div style="font-weight:600; color:var(--ink);"><?php echo htmlspecialchars($filmTitle, ENT_QUOTES, 'UTF-8'); ?></div>
                                     <div class="muted" style="font-size:0.82rem; margin-top:2px;">
-                                        🕐 <?php echo date('D, M j, Y &middot; H:i', $startTime); ?>
+                                         <?php echo date('D, M j, Y', $startTime) . ' &middot; ' . date('H:i', $startTime); ?>
                                     </div>
                                 </td>
                                 <td style="padding:16px 18px;">
-                                    <div style="font-weight:500;">🏛️ <?php echo htmlspecialchars($roomName, ENT_QUOTES, 'UTF-8'); ?></div>
+                                    <div style="font-weight:500;"> <?php echo htmlspecialchars($roomName, ENT_QUOTES, 'UTF-8'); ?></div>
                                     <span class="film-card__tag" style="background:var(--tint); color:var(--ink); font-weight:700; font-family:var(--font-mono); margin-top:4px; display:inline-block;">
                                         Row <?php echo htmlspecialchars((string)$res->getRowLetter(), ENT_QUOTES, 'UTF-8'); ?> &middot; Seat <?php echo (int)$res->getSeatNumber(); ?>
                                     </span>
@@ -191,7 +191,7 @@ if ($isAdmin) {
             </div>
             <?php if (!empty($reservations)): ?>
                 <button type="button" class="btn btn--secondary" onclick="window.print()">
-                    🖨️ Print Tickets
+                     Print Tickets
                 </button>
             <?php endif; ?>
         </header>
@@ -204,7 +204,7 @@ if ($isAdmin) {
 
         <?php if (empty($reservations)): ?>
             <div class="stat-card" style="text-align:center; padding:56px 24px; max-width:600px; margin:20px auto;">
-                <span style="font-size:2.5rem; margin-bottom:8px; display:block;" aria-hidden="true">🎟️</span>
+                
                 <h3 style="margin-bottom:8px;">No reservations yet</h3>
                 <p class="muted" style="margin-bottom:20px;">You haven't reserved any cinema tickets yet. Explore what's playing today!</p>
                 <a href="/Cinema/films" class="btn btn--primary" style="margin:0 auto;">Browse Now Playing &rarr;</a>
@@ -227,10 +227,10 @@ if ($isAdmin) {
                     <div>
                         <h3 class="ticket__film"><?php echo htmlspecialchars($filmTitle, ENT_QUOTES, 'UTF-8'); ?></h3>
                         <p class="ticket__meta" style="margin-top:4px;">
-                            🏛️ <?php echo htmlspecialchars($roomName, ENT_QUOTES, 'UTF-8'); ?>
+                             <?php echo htmlspecialchars($roomName, ENT_QUOTES, 'UTF-8'); ?>
                         </p>
                         <p class="ticket__meta" style="color:var(--ink); font-weight:600; margin-top:2px;">
-                            🕐 <?php echo date('D, M j, Y &middot; H:i', $startTime); ?>
+                             <?php echo date('D, M j, Y', $startTime) . ' &middot; ' . date('H:i', $startTime); ?>
                         </p>
                     </div>
 
