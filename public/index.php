@@ -176,8 +176,17 @@ switch ($path) {
         break;
 
     case '/Cinema/logout':
-        session_unset(); session_destroy();
-        header('Location: /Cinema/login');
+        // Signing out needs a POST with the session token, so a link on another site cannot sign people out.
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && csrf_valid()) {
+            session_unset(); session_destroy();
+            header('Location: /Cinema/login');
+            break;
+        }
+        if (empty($_SESSION['id'])) {
+            header('Location: /Cinema/login');
+            break;
+        }
+        require_once __DIR__ . '/../app/views/sign-out.php';
         break;
 
     case '/Cinema/dashboard':
