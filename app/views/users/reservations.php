@@ -85,9 +85,9 @@ $flashError = flash_take('error');
                 <p class="muted" style="font-size:0.85rem; margin-top:4px;">Across all registered customer accounts</p>
             </div>
             <div class="stat-card">
-                <span class="stat-card__label">Upcoming Theatrical Shows</span>
+                <span class="stat-card__label">Upcoming Bookings</span>
                 <span class="stat-card__value"><?php echo $activeCount; ?></span>
-                <p class="muted" style="font-size:0.85rem; margin-top:4px;">Active upcoming session bookings</p>
+                <p class="muted" style="font-size:0.85rem; margin-top:4px;">Tickets for screenings that have not started</p>
             </div>
             <div class="stat-card">
                 <span class="stat-card__label">Box Office Receipts</span>

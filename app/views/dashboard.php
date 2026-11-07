@@ -23,20 +23,22 @@ if (isset($_SESSION['id'])) {
     } else {
         $stats['films'] = count((new FilmModel())->getAllFilms('', true));
         $reservations = (new ReservationModel())->getReservationsByUserId($_SESSION['id']);
-        $stats['seats'] = count($reservations);
         
         $nearest = null;
         $nearestRes = null;
         $now = time();
+        $upcomingCount = 0;
         foreach ($reservations as $res) {
             $st = strtotime((string)$res->getStartTime());
             if ($st >= $now) {
+                $upcomingCount++;
                 if ($nearest === null || $st < $nearest) {
                     $nearest = $st;
                     $nearestRes = $res;
                 }
             }
         }
+        $stats['seats'] = $upcomingCount;
         $stats['nearest'] = $nearest ? (date('D, M j', $nearest) . ' · ' . date('H:i', $nearest)) : 'None scheduled';
         $stats['nearestRes'] = $nearestRes;
     }
@@ -85,9 +87,9 @@ if (isset($_SESSION['id'])) {
                 <p class="muted" style="font-size:0.85rem; margin-top:4px;">Configured screening halls</p>
             </div>
             <div class="stat-card">
-                <span class="stat-card__label">Screening Sessions</span>
+                <span class="stat-card__label">Upcoming Sessions</span>
                 <span class="stat-card__value"><?php echo $stats['schedules']; ?></span>
-                <p class="muted" style="font-size:0.85rem; margin-top:4px;">Active upcoming programmes</p>
+                <p class="muted" style="font-size:0.85rem; margin-top:4px;">Screenings not yet finished</p>
             </div>
             <div class="stat-card">
                 <span class="stat-card__label">Customer Bookings</span>
@@ -106,9 +108,9 @@ if (isset($_SESSION['id'])) {
                 <p class="muted" style="font-size:0.85rem; margin-top:4px;">Films currently on screen</p>
             </div>
             <div class="stat-card">
-                <span class="stat-card__label">My Booked Tickets</span>
+                <span class="stat-card__label">Upcoming Tickets</span>
                 <span class="stat-card__value"><?php echo $stats['seats']; ?></span>
-                <p class="muted" style="font-size:0.85rem; margin-top:4px;">Seats confirmed across sessions</p>
+                <p class="muted" style="font-size:0.85rem; margin-top:4px;">Seats booked for screenings still to come</p>
             </div>
             <div class="stat-card">
                 <span class="stat-card__label">Next Screening</span>
