@@ -58,6 +58,7 @@ $error   = $_GET['error']   ?? '';
     <?php if ($success === 'updated'): ?><div class="alert alert--success">✓ Film updated successfully.</div><?php endif; ?>
     <?php if ($success === 'deleted'): ?><div class="alert alert--success">✓ Film removed from programme.</div><?php endif; ?>
     <?php if ($error === 'db'):        ?><div class="alert alert--error">⚠ Database transaction error. Please try again.</div><?php endif; ?>
+    <?php if ($error === 'invalid'):   ?><?= invalid_alert() ?><?php endif; ?>
 
     <?php if (empty($films)): ?>
         <div class="stat-card" style="text-align:center; padding:56px 24px; max-width:600px; margin:20px auto;">

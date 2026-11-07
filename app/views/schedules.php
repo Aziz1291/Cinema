@@ -68,6 +68,7 @@ $selectedDate = $_GET['date'] ?? 'all';
     <?php if ($success === 'updated'): ?><div class="alert alert--success">✓ Screening session updated.</div><?php endif; ?>
     <?php if ($success === 'deleted'): ?><div class="alert alert--success">✓ Screening session deleted.</div><?php endif; ?>
     <?php if ($error === 'db'):        ?><div class="alert alert--error">⚠ Database transaction error. Please try again.</div><?php endif; ?>
+    <?php if ($error === 'invalid'):   ?><?= invalid_alert() ?><?php endif; ?>
     <?php if ($error === 'time'):      ?><div class="alert alert--error">⚠ Invalid timing: End time must fall after start time.</div><?php endif; ?>
     <?php if ($error === 'overlap'):   ?>
         <div class="alert alert--warning" role="alert">

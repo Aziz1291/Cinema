@@ -1,7 +1,37 @@
 <?php
 // Keep application errors in server logs instead of exposing paths and queries.
-ini_set('display_errors', '0');
-ini_set('log_errors', '1');
+require_once __DIR__ . '/../app/error-page.php';
+
+// Limits follow the database columns (films.title VARCHAR(100), films.description
+// VARCHAR(255), rooms.name VARCHAR(50)); rows are lettered A to Z.
+const FILM_RULES = [
+    'title'       => ['Title', 'text', 1, 100],
+    'duration'    => ['Duration (minutes)', 'int', 1, 480],
+    'description' => ['Description', 'text', 1, 255],
+];
+const ROOM_RULES = [
+    'name'        => ['Room name', 'text', 1, 50],
+    'rowsNumber'  => ['Number of rows', 'int', 1, 26],
+    'seatsNumber' => ['Number of seats', 'int', 1, 1300],
+];
+const SCHEDULE_RULES = [
+    'film_id'      => ['Film', 'int', 1, PHP_INT_MAX],
+    'room_id'      => ['Room', 'int', 1, PHP_INT_MAX],
+    'ticket_price' => ['Ticket price', 'float', 0, 1000],
+];
+
+/** Validates a session form; returns the cleaned values and start time, or sends the admin back. */
+function valid_schedule()
+{
+    $problem = validate_fields(SCHEDULE_RULES, $schedule);
+    $start = strtotime((string) ($_POST['start_time'] ?? ''));
+    if (!$problem && $start === false) $problem = 'Start time is not a valid date and time.';
+    if (!$problem && $start < time()) $problem = 'A session cannot start in the past.';
+    if ($problem) fail_to('/Cinema/schedules', $problem);
+    $schedule['start_time'] = date('Y-m-d H:i:s', $start);
+    return $schedule;
+}
+
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
 // Normalize path to always start with /Cinema so local routes work on Render
@@ -243,18 +273,22 @@ switch ($path) {
     case '/Cinema/films/create':
         requireAdmin();
         require_once __DIR__ . '/../app/models/FilmModel.php';
+        $problem = validate_fields(FILM_RULES, $film);
+        if ($problem) fail_to('/Cinema/films', $problem);
         // ── Handle poster upload ───────────────────────────
         $posterFilename = save_poster($_FILES['poster_image'] ?? []) ?? '';
-        $ok = (new FilmModel())->createFilm($_POST['title'], $_POST['duration'], $_POST['description'], $posterFilename);
+        $ok = (new FilmModel())->createFilm($film['title'], $film['duration'], $film['description'], $posterFilename);
         header('Location: /Cinema/films?' . ($ok ? 'success=created' : 'error=db'));
         break;
 
     case '/Cinema/films/update':
         requireAdmin();
         require_once __DIR__ . '/../app/models/FilmModel.php';
+        $problem = validate_fields(FILM_RULES, $film);
+        if ($problem) fail_to('/Cinema/films', $problem);
         // ── Handle poster upload ───────────────────────────
         $posterFilename = save_poster($_FILES['poster_image'] ?? []) ?? basename((string)($_POST['old_poster'] ?? ''));
-        $ok = (new FilmModel())->updateFilm($_POST['id'], $_POST['title'], $_POST['duration'], $_POST['description'], $posterFilename);
+        $ok = (new FilmModel())->updateFilm($_POST['id'], $film['title'], $film['duration'], $film['description'], $posterFilename);
         header('Location: /Cinema/films?' . ($ok ? 'success=updated' : 'error=db'));
         break;
 
@@ -269,14 +303,20 @@ switch ($path) {
     case '/Cinema/rooms/create':
         requireAdmin();
         require_once __DIR__ . '/../app/models/RoomModel.php';
-        $ok = (new RoomModel())->createRoom($_POST['name'], $_POST['rowsNumber'], $_POST['seatsNumber']);
+        $problem = validate_fields(ROOM_RULES, $room);
+        if (!$problem && $room['seatsNumber'] < $room['rowsNumber']) $problem = 'A room needs at least one seat per row.';
+        if ($problem) fail_to('/Cinema/rooms', $problem);
+        $ok = (new RoomModel())->createRoom($room['name'], $room['rowsNumber'], $room['seatsNumber']);
         header('Location: /Cinema/rooms?' . ($ok ? 'success=created' : 'error=db'));
         break;
 
     case '/Cinema/rooms/update':
         requireAdmin();
         require_once __DIR__ . '/../app/models/RoomModel.php';
-        $ok = (new RoomModel())->updateRoom($_POST['id'], $_POST['name'], $_POST['rowsNumber'], $_POST['seatsNumber']);
+        $problem = validate_fields(ROOM_RULES, $room);
+        if (!$problem && $room['seatsNumber'] < $room['rowsNumber']) $problem = 'A room needs at least one seat per row.';
+        if ($problem) fail_to('/Cinema/rooms', $problem);
+        $ok = (new RoomModel())->updateRoom($_POST['id'], $room['name'], $room['rowsNumber'], $room['seatsNumber']);
         header('Location: /Cinema/rooms?' . ($ok ? 'success=updated' : 'error=db'));
         break;
 
@@ -292,17 +332,18 @@ switch ($path) {
         requireAdmin();
         require_once __DIR__ . '/../app/models/ScheduleModel.php';
         require_once __DIR__ . '/../app/models/FilmModel.php';
-        $film = (new FilmModel())->getFilmById($_POST['film_id']);
-        $duration = $film ? (int)$film->getDuration() : 0;
-        $endTime = date('Y-m-d H:i:s', strtotime($_POST['start_time'] . " + " . $duration . " minutes"));
-        
+        $s = valid_schedule();
+        $film = (new FilmModel())->getFilmById($s['film_id']);
+        if (!$film) fail_to('/Cinema/schedules', 'Choose an existing film.');
+        $endTime = date('Y-m-d H:i:s', strtotime($s['start_time'] . " + " . (int)$film->getDuration() . " minutes"));
+
         $scheduleModel = new ScheduleModel();
-        if ($scheduleModel->hasOverlap($_POST['room_id'], $_POST['start_time'], $endTime)) {
+        if ($scheduleModel->hasOverlap($s['room_id'], $s['start_time'], $endTime)) {
             header('Location: /Cinema/schedules?error=overlap');
             break;
         }
 
-        $ok = $scheduleModel->createSchedule($_POST['film_id'], $_POST['room_id'], $_POST['start_time'], $endTime, $_POST['ticket_price']);
+        $ok = $scheduleModel->createSchedule($s['film_id'], $s['room_id'], $s['start_time'], $endTime, $s['ticket_price']);
         header('Location: /Cinema/schedules?' . ($ok ? 'success=created' : 'error=db'));
         break;
 
@@ -310,17 +351,18 @@ switch ($path) {
         requireAdmin();
         require_once __DIR__ . '/../app/models/ScheduleModel.php';
         require_once __DIR__ . '/../app/models/FilmModel.php';
-        $film = (new FilmModel())->getFilmById($_POST['film_id']);
-        $duration = $film ? (int)$film->getDuration() : 0;
-        $endTime = date('Y-m-d H:i:s', strtotime($_POST['start_time'] . " + " . $duration . " minutes"));
+        $s = valid_schedule();
+        $film = (new FilmModel())->getFilmById($s['film_id']);
+        if (!$film) fail_to('/Cinema/schedules', 'Choose an existing film.');
+        $endTime = date('Y-m-d H:i:s', strtotime($s['start_time'] . " + " . (int)$film->getDuration() . " minutes"));
 
         $scheduleModel = new ScheduleModel();
-        if ($scheduleModel->hasOverlap($_POST['room_id'], $_POST['start_time'], $endTime, $_POST['id'])) {
+        if ($scheduleModel->hasOverlap($s['room_id'], $s['start_time'], $endTime, $_POST['id'])) {
             header('Location: /Cinema/schedules?error=overlap');
             break;
         }
 
-        $ok = $scheduleModel->updateSchedule($_POST['id'], $_POST['film_id'], $_POST['room_id'], $_POST['start_time'], $endTime, $_POST['ticket_price']);
+        $ok = $scheduleModel->updateSchedule($_POST['id'], $s['film_id'], $s['room_id'], $s['start_time'], $endTime, $s['ticket_price']);
         header('Location: /Cinema/schedules?' . ($ok ? 'success=updated' : 'error=db'));
         break;
 
@@ -330,5 +372,8 @@ switch ($path) {
         $ok = (new ScheduleModel())->deleteSchedule($_POST['id']);
         header('Location: /Cinema/schedules?' . ($ok ? 'success=deleted' : 'error=db'));
         break;
+
+    default:
+        not_found();
 }
 ?>

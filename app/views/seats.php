@@ -29,6 +29,10 @@ if ($schedule_id > 0) {
 }
 
 $room  = (new RoomModel())->getRoomById($room_id);
+// A missing or removed screening or room gets the 404 page, not an empty seat plan.
+if (!$room || ($schedule_id > 0 && !$schedule)) {
+    not_found();
+}
 $seats = (new SeatModel())->getSeatsByRoomId($room_id);
 
 $seatsByRow = [];
