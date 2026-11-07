@@ -154,7 +154,7 @@ if (isset($_SESSION['id'])) {
                 <p class="spotlight-card__meta">
                      <?php echo htmlspecialchars((string)$nr->getRoomName(), ENT_QUOTES, 'UTF-8'); ?> &middot;
                     Seat <strong><?php echo htmlspecialchars((string)$nr->getRowLetter() . $nr->getSeatNumber(), ENT_QUOTES, 'UTF-8'); ?></strong> &middot;
-                    Starts <?php echo date('D, M j &middot; H:i', strtotime((string)$nr->getStartTime())); ?>
+                    Starts <?php echo date('D, M j', strtotime((string)$nr->getStartTime())); ?> &middot; <?php echo date('H:i', strtotime((string)$nr->getStartTime())); ?>
                 </p>
             </div>
             <a href="/Cinema/reservations" class="btn btn--primary">View Digital Ticket &rarr;</a>
