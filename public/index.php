@@ -65,22 +65,28 @@ if ($path === '/Cinema/privacy') {
 }
 if ($path === '/Cinema/acknowledge-privacy') {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-        http_response_code(405);
-        exit('Method not allowed.');
+        header('Location: /Cinema/');
+        exit;
     }
+    // A refused acknowledgement shows the notice again with a reason instead of a blank page.
     if (!csrf_valid()) {
-        http_response_code(403);
-        exit('Invalid or expired request. Please reload the notice and try again.');
+        $gateError = 'Your request expired. Please tick the box and try again.';
+        $gateStatus = 403;
+    } elseif (($_POST['privacy_acknowledgement'] ?? '') !== 'yes') {
+        $gateError = 'Please read and tick the privacy notice to continue.';
+        $gateStatus = 400;
+    } else {
+        $_SESSION['privacy_acknowledged'] = true;
+        header('Location: /Cinema/');
+        exit;
     }
-    if (($_POST['privacy_acknowledgement'] ?? '') !== 'yes') {
-        http_response_code(400);
-        exit('Please read and acknowledge the privacy notice.');
-    }
-    $_SESSION['privacy_acknowledged'] = true;
-    header('Location: /Cinema/');
+    http_response_code($gateStatus);
+    require __DIR__ . '/../app/views/privacy-gate.php';
     exit;
 }
 if (empty($_SESSION['privacy_acknowledged'])) {
+    // Pages and actions stay closed until the notice is acknowledged.
+    if (!in_array($_SERVER['REQUEST_METHOD'], ['GET', 'HEAD'], true)) http_response_code(403);
     require __DIR__ . '/../app/views/privacy-gate.php';
     exit;
 }
@@ -93,7 +99,7 @@ $protectedRoutes = [
     '/Cinema/seats', '/Cinema/seat',
     '/Cinema/films',
     '/Cinema/schedules',
-    '/Cinema/reservations', '/Cinema/reservations/cancel',
+    '/Cinema/reservations', '/Cinema/reservations/cancel', '/Cinema/reserve',
     '/Cinema/films/add', '/Cinema/films/edit',
     '/Cinema/rooms/add', '/Cinema/rooms/edit',
     '/Cinema/schedules/add', '/Cinema/schedules/edit',
@@ -122,10 +128,15 @@ if (in_array($path, $postOnlyRoutes, true)) {
     }
 }
 
-// Helper: check admin, redirect non-admins
+// Helper: signed-out visitors go to the login page; customers get a clear 403 page.
 function requireAdmin() {
-    if (empty($_SESSION['id']) || !(new UserModel())->isAdmin($_SESSION['id'])) {
-        header('Location: /Cinema/dashboard'); exit;
+    if (empty($_SESSION['id'])) {
+        header('Location: /Cinema/login'); exit;
+    }
+    if (!(new UserModel())->isAdmin($_SESSION['id'])) {
+        http_response_code(403);
+        require __DIR__ . '/../app/views/403.php';
+        exit;
     }
 }
 

@@ -28,6 +28,7 @@
 <main class="backdrop"><section class="card" role="dialog" aria-modal="true" aria-labelledby="notice-title">
   <h1 id="notice-title">Before you explore Cinema</h1>
   <p>This academic demo uses shared data. Avoid real personal information and reused passwords.</p>
+  <?php if (!empty($gateError)): ?><p role="alert" style="background:#fee2e2;color:#7f1d1d;border-radius:8px;padding:10px 12px"><?= htmlspecialchars($gateError, ENT_QUOTES, 'UTF-8') ?></p><?php endif; ?>
   <form action="/Cinema/acknowledge-privacy" method="post">
     <?= csrf_field() ?>
     <label><input type="checkbox" name="privacy_acknowledgement" value="yes" required autofocus><span>I have read the <a href="/Cinema/privacy" target="_blank" rel="noopener">privacy notice</a>.</span></label>
