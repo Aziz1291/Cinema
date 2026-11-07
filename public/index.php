@@ -12,7 +12,7 @@ const FILM_RULES = [
 const ROOM_RULES = [
     'name'        => ['Room name', 'text', 1, 50],
     'rowsNumber'  => ['Number of rows', 'int', 1, 26],
-    'seatsNumber' => ['Number of seats', 'int', 1, 1300],
+    'seatsNumber' => ['Number of seats', 'int', 1, 1000],
 ];
 const SCHEDULE_RULES = [
     'film_id'      => ['Film', 'int', 1, PHP_INT_MAX],
@@ -163,12 +163,14 @@ switch ($path) {
         require_once __DIR__ . '/../app/controllers/AuthController.php';
         $authController = new AuthController();
         $userModel      = new UserModel();
-        if ($authController->userRegister()) {
-            $user = $userModel->getUserByUsernameOrEmail($_POST['username']);
+        $registered = $authController->userRegister();
+        if ($registered === true) {
+            $user = $userModel->getUserByUsernameOrEmail(trim($_POST['username']));
             session_regenerate_id(true);
             $_SESSION['id'] = $user->getId();
             header('Location: /Cinema/dashboard');
         } else {
+            $_SESSION['form_error'] = $registered;
             header('Location: /Cinema/register?error=validation');
         }
         break;
@@ -276,7 +278,8 @@ switch ($path) {
         $problem = validate_fields(FILM_RULES, $film);
         if ($problem) fail_to('/Cinema/films', $problem);
         // ── Handle poster upload ───────────────────────────
-        $posterFilename = save_poster($_FILES['poster_image'] ?? []) ?? '';
+        $posterFilename = save_poster($_FILES['poster_image'] ?? [], $posterError) ?? '';
+        if ($posterError) fail_to('/Cinema/films', $posterError);
         $ok = (new FilmModel())->createFilm($film['title'], $film['duration'], $film['description'], $posterFilename);
         header('Location: /Cinema/films?' . ($ok ? 'success=created' : 'error=db'));
         break;
@@ -287,7 +290,8 @@ switch ($path) {
         $problem = validate_fields(FILM_RULES, $film);
         if ($problem) fail_to('/Cinema/films', $problem);
         // ── Handle poster upload ───────────────────────────
-        $posterFilename = save_poster($_FILES['poster_image'] ?? []) ?? basename((string)($_POST['old_poster'] ?? ''));
+        $posterFilename = save_poster($_FILES['poster_image'] ?? [], $posterError) ?? basename((string)($_POST['old_poster'] ?? ''));
+        if ($posterError) fail_to('/Cinema/films', $posterError);
         $ok = (new FilmModel())->updateFilm($_POST['id'], $film['title'], $film['duration'], $film['description'], $posterFilename);
         header('Location: /Cinema/films?' . ($ok ? 'success=updated' : 'error=db'));
         break;

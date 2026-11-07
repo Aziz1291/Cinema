@@ -2,7 +2,8 @@
 $alertMessage = null;
 $error = $_GET['error'] ?? '';
 if ($error === 'validation') {
-    $alertMessage = 'Please check your details. Username and email must be unique, passwords must match, and you must be 13 or older.';
+    $alertMessage = $_SESSION['form_error'] ?? 'Please check your details. Username and email must be unique, passwords must match, and you must be 13 or older.';
+    unset($_SESSION['form_error']);
 }
 ?>
 <!DOCTYPE html>
@@ -39,28 +40,28 @@ if ($error === 'validation') {
                 <div class="auth-card__row">
                     <div class="auth-card__group">
                         <label for="first_name">First Name</label>
-                        <input type="text" id="first_name" name="first_name" placeholder="Jane" autocomplete="given-name" required>
+                        <input type="text" id="first_name" name="first_name" placeholder="Jane" autocomplete="given-name" required maxlength="50">
                     </div>
                     <div class="auth-card__group">
                         <label for="last_name">Last Name</label>
-                        <input type="text" id="last_name" name="last_name" placeholder="Doe" autocomplete="family-name" required>
+                        <input type="text" id="last_name" name="last_name" placeholder="Doe" autocomplete="family-name" required maxlength="50">
                     </div>
                 </div>
 
                 <div class="auth-card__group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Choose a username" autocomplete="username" required>
+                    <input type="text" id="username" name="username" placeholder="Choose a username" autocomplete="username" required minlength="3" maxlength="50">
                 </div>
 
                 <div class="auth-card__group">
                     <label for="email">Email Address</label>
-                    <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required>
+                    <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email" required maxlength="100">
                 </div>
 
                 <div class="auth-card__row">
                     <div class="auth-card__group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="Create password" autocomplete="new-password" required>
+                        <input type="password" id="password" name="password" placeholder="Create password" autocomplete="new-password" required minlength="8">
                     </div>
                     <div class="auth-card__group">
                         <label for="confirm_password">Confirm Password</label>

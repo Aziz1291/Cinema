@@ -75,7 +75,7 @@ $error = $_GET['error'] ?? '';
 
             <div class="form-group">
                 <label class="form-label" for="start_time">Screening Start Time</label>
-                <input type="datetime-local" id="start_time" name="start_time" class="form-input" required>
+                <input type="datetime-local" id="start_time" name="start_time" class="form-input" required min="<?= date('Y-m-d\TH:i') ?>">
                 <div id="calculatedEndNote" class="form-hint" style="margin-top:6px; color:var(--accent);">
                     End time will be calculated automatically based on film duration (+15 min cleaning buffer).
                 </div>
@@ -83,7 +83,7 @@ $error = $_GET['error'] ?? '';
 
             <div class="form-group">
                 <label class="form-label" for="ticket_price">Ticket Admission Price ($)</label>
-                <input type="number" id="ticket_price" name="ticket_price" class="form-input" min="0" step="0.5" value="12.00" required>
+                <input type="number" id="ticket_price" name="ticket_price" class="form-input" min="0" max="1000" step="0.5" value="12.00" required>
             </div>
 
             <div class="form-actions">

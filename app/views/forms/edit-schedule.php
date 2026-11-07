@@ -84,7 +84,7 @@ $error = $_GET['error'] ?? '';
 
             <div class="form-group">
                 <label class="form-label" for="ticket_price">Ticket Admission Price ($)</label>
-                <input type="number" id="ticket_price" name="ticket_price" class="form-input" min="0" step="0.5"
+                <input type="number" id="ticket_price" name="ticket_price" class="form-input" min="0" max="1000" step="0.5"
                        value="<?php echo number_format((float)$schedule->getTicketPrice(), 2, '.', ''); ?>" required>
             </div>
 

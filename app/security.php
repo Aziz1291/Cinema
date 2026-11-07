@@ -87,17 +87,20 @@ function not_found()
  * The file name is random and the extension comes from the detected MIME type,
  * never from the client file name. Returns the stored file name or null.
  */
-function save_poster(array $file)
+function save_poster(array $file, &$error = null)
 {
-    if (empty($file['name']) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+    $error = null;
+    if (empty($file['name']) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
         return null;
     }
-    if ($file['size'] > 5 * 1024 * 1024) {
+    if (($file['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || $file['size'] > 5 * 1024 * 1024) {
+        $error = 'The poster must be an image of 5 MB or less.';
         return null;
     }
     $types = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/gif' => 'gif', 'image/webp' => 'webp'];
     $mime = mime_content_type($file['tmp_name']);
     if (!isset($types[$mime])) {
+        $error = 'The poster must be a JPG, PNG, GIF or WebP image.';
         return null;
     }
     $name = 'poster_' . bin2hex(random_bytes(8)) . '.' . $types[$mime];
