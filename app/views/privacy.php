@@ -30,6 +30,10 @@
         button { background: #e75b7b; color: #160d12; border: 0; border-radius: .5rem; padding: .8rem 1.2rem; font: inherit; font-weight: 700; cursor: pointer; }
         :focus-visible { outline: 3px solid #ffd3dd; outline-offset: 4px; }
     </style>
+    <link rel="icon" href="/Cinema/public/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="/Cinema/public/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="/Cinema/public/favicon-48.png">
+    <link rel="apple-touch-icon" href="/Cinema/public/apple-touch-icon.png">
 </head>
 <body><main>
     <p>CINEMA DEMO</p>

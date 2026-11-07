@@ -15,10 +15,13 @@ if ($error === 'no_user') {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In – Cinema</title>
-    <link rel="icon" type="image/png" href="/Cinema/public/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="/Cinema/public/css/Auth.css">
+    <link rel="icon" href="/Cinema/public/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="/Cinema/public/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="/Cinema/public/favicon-48.png">
+    <link rel="apple-touch-icon" href="/Cinema/public/apple-touch-icon.png">
 </head>
 <body>
     <main class="auth-container">

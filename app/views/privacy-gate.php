@@ -23,6 +23,10 @@
     .cookie[hidden]{display:none}
     :focus-visible{outline:3px solid #2563eb;outline-offset:3px}@media(max-width:480px){.cookie{align-items:flex-start;flex-wrap:wrap}}
   </style>
+    <link rel="icon" href="/Cinema/public/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="/Cinema/public/favicon.svg">
+    <link rel="icon" type="image/png" sizes="48x48" href="/Cinema/public/favicon-48.png">
+    <link rel="apple-touch-icon" href="/Cinema/public/apple-touch-icon.png">
 </head>
 <body>
 <main class="backdrop"><section class="card" role="dialog" aria-modal="true" aria-labelledby="notice-title">
