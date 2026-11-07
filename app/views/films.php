@@ -11,8 +11,8 @@ if (isset($_SESSION['id'])) {
 require_once __DIR__ . '/../models/FilmModel.php';
 $search  = $_GET['search']  ?? '';
 $films   = (new FilmModel())->getAllFilms($search);
-$success = $_GET['success'] ?? '';
-$error   = $_GET['error']   ?? '';
+$success = flash_take('success');
+$error   = flash_take('error');
 ?>
 <!DOCTYPE html>
 <html lang="en">

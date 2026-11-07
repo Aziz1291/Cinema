@@ -10,8 +10,8 @@ if (isset($_SESSION['id'])) {
 }
 require_once __DIR__ . '/../models/RoomModel.php';
 $rooms   = (new RoomModel())->getAllRooms();
-$success = $_GET['success'] ?? '';
-$error   = $_GET['error']   ?? '';
+$success = flash_take('success');
+$error   = flash_take('error');
 ?>
 <!DOCTYPE html>
 <html lang="en">

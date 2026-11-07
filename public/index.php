@@ -93,7 +93,7 @@ $protectedRoutes = [
     '/Cinema/seats', '/Cinema/seat',
     '/Cinema/films',
     '/Cinema/schedules',
-    '/Cinema/reservations',
+    '/Cinema/reservations', '/Cinema/reservations/cancel',
     '/Cinema/films/add', '/Cinema/films/edit',
     '/Cinema/rooms/add', '/Cinema/rooms/edit',
     '/Cinema/schedules/add', '/Cinema/schedules/edit',
@@ -106,7 +106,7 @@ if (in_array($path, $protectedRoutes, true) && empty($_SESSION['id'])) {
 
 // State-changing routes: POST only, with a valid CSRF token
 $postOnlyRoutes = [
-    '/Cinema/loginUser', '/Cinema/registerUser', '/Cinema/reserve',
+    '/Cinema/loginUser', '/Cinema/registerUser', '/Cinema/reserve', '/Cinema/reservations/cancel',
     '/Cinema/films/create', '/Cinema/films/update', '/Cinema/films/delete',
     '/Cinema/rooms/create', '/Cinema/rooms/update', '/Cinema/rooms/delete',
     '/Cinema/schedules/create', '/Cinema/schedules/update', '/Cinema/schedules/delete',
@@ -243,12 +243,28 @@ switch ($path) {
                 }
             }
 
-            header('Location: ' . ($ok
-                ? '/Cinema/reservations?success=1'
-                : '/Cinema/seats?schedule_id=' . $scheduleId . '&error=taken'));
+            if ($ok) {
+                go_flash('/Cinema/reservations', 'success', 'booked');
+            }
+            go_flash('/Cinema/seats?schedule_id=' . $scheduleId, 'error', 'taken');
         } else {
             header('Location: /Cinema/dashboard');
         }
+        break;
+
+    case '/Cinema/reservations/cancel':
+        // Customers cancel their own upcoming bookings; admins can cancel any booking.
+        require_once __DIR__ . '/../app/models/ReservationModel.php';
+        $reservationModel = new ReservationModel();
+        $booking = $reservationModel->getReservationById((int)($_POST['id'] ?? 0));
+        $adminCancel = (new UserModel())->isAdmin($_SESSION['id']);
+        $allowed = $booking && ($adminCancel
+            || ((int)$booking['user_id'] === (int)$_SESSION['id'] && strtotime($booking['start_time']) > time()));
+        if (!$allowed) {
+            go_flash('/Cinema/reservations', 'error', 'cancel');
+        }
+        $reservationModel->cancelReservation((int)$booking['id']);
+        go_flash('/Cinema/reservations', 'success', 'cancelled');
         break;
 
     case '/Cinema/films/add':
@@ -290,7 +306,7 @@ switch ($path) {
         $posterFilename = save_poster($_FILES['poster_image'] ?? [], $posterError) ?? '';
         if ($posterError) fail_to('/Cinema/films', $posterError);
         $ok = (new FilmModel())->createFilm($film['title'], $film['duration'], $film['description'], $posterFilename);
-        header('Location: /Cinema/films?' . ($ok ? 'success=created' : 'error=db'));
+        go_flash('/Cinema/films', $ok ? 'success' : 'error', $ok ? 'created' : 'db');
         break;
 
     case '/Cinema/films/update':
@@ -302,14 +318,14 @@ switch ($path) {
         $posterFilename = save_poster($_FILES['poster_image'] ?? [], $posterError) ?? basename((string)($_POST['old_poster'] ?? ''));
         if ($posterError) fail_to('/Cinema/films', $posterError);
         $ok = (new FilmModel())->updateFilm($_POST['id'], $film['title'], $film['duration'], $film['description'], $posterFilename);
-        header('Location: /Cinema/films?' . ($ok ? 'success=updated' : 'error=db'));
+        go_flash('/Cinema/films', $ok ? 'success' : 'error', $ok ? 'updated' : 'db');
         break;
 
     case '/Cinema/films/delete':
         requireAdmin();
         require_once __DIR__ . '/../app/models/FilmModel.php';
         $ok = (new FilmModel())->deleteFilm($_POST['id']);
-        header('Location: /Cinema/films?' . ($ok ? 'success=deleted' : 'error=db'));
+        go_flash('/Cinema/films', $ok ? 'success' : 'error', $ok ? 'deleted' : 'db');
         break;
 
     // Rooms
@@ -320,7 +336,7 @@ switch ($path) {
         if (!$problem && $room['seatsNumber'] < $room['rowsNumber']) $problem = 'A room needs at least one seat per row.';
         if ($problem) fail_to('/Cinema/rooms', $problem);
         $ok = (new RoomModel())->createRoom($room['name'], $room['rowsNumber'], $room['seatsNumber']);
-        header('Location: /Cinema/rooms?' . ($ok ? 'success=created' : 'error=db'));
+        go_flash('/Cinema/rooms', $ok ? 'success' : 'error', $ok ? 'created' : 'db');
         break;
 
     case '/Cinema/rooms/update':
@@ -330,14 +346,14 @@ switch ($path) {
         if (!$problem && $room['seatsNumber'] < $room['rowsNumber']) $problem = 'A room needs at least one seat per row.';
         if ($problem) fail_to('/Cinema/rooms', $problem);
         $ok = (new RoomModel())->updateRoom($_POST['id'], $room['name'], $room['rowsNumber'], $room['seatsNumber']);
-        header('Location: /Cinema/rooms?' . ($ok ? 'success=updated' : 'error=db'));
+        go_flash('/Cinema/rooms', $ok ? 'success' : 'error', $ok ? 'updated' : 'db');
         break;
 
     case '/Cinema/rooms/delete':
         requireAdmin();
         require_once __DIR__ . '/../app/models/RoomModel.php';
         $ok = (new RoomModel())->deleteRoom($_POST['id']);
-        header('Location: /Cinema/rooms?' . ($ok ? 'success=deleted' : 'error=db'));
+        go_flash('/Cinema/rooms', $ok ? 'success' : 'error', $ok ? 'deleted' : 'db');
         break;
 
     // Schedules
@@ -352,12 +368,12 @@ switch ($path) {
 
         $scheduleModel = new ScheduleModel();
         if ($scheduleModel->hasOverlap($s['room_id'], $s['start_time'], $endTime)) {
-            header('Location: /Cinema/schedules?error=overlap');
+            go_flash('/Cinema/schedules', 'error', 'overlap');
             break;
         }
 
         $ok = $scheduleModel->createSchedule($s['film_id'], $s['room_id'], $s['start_time'], $endTime, $s['ticket_price']);
-        header('Location: /Cinema/schedules?' . ($ok ? 'success=created' : 'error=db'));
+        go_flash('/Cinema/schedules', $ok ? 'success' : 'error', $ok ? 'created' : 'db');
         break;
 
     case '/Cinema/schedules/update':
@@ -371,19 +387,19 @@ switch ($path) {
 
         $scheduleModel = new ScheduleModel();
         if ($scheduleModel->hasOverlap($s['room_id'], $s['start_time'], $endTime, $_POST['id'])) {
-            header('Location: /Cinema/schedules?error=overlap');
+            go_flash('/Cinema/schedules', 'error', 'overlap');
             break;
         }
 
         $ok = $scheduleModel->updateSchedule($_POST['id'], $s['film_id'], $s['room_id'], $s['start_time'], $endTime, $s['ticket_price']);
-        header('Location: /Cinema/schedules?' . ($ok ? 'success=updated' : 'error=db'));
+        go_flash('/Cinema/schedules', $ok ? 'success' : 'error', $ok ? 'updated' : 'db');
         break;
 
     case '/Cinema/schedules/delete':
         requireAdmin();
         require_once __DIR__ . '/../app/models/ScheduleModel.php';
         $ok = (new ScheduleModel())->deleteSchedule($_POST['id']);
-        header('Location: /Cinema/schedules?' . ($ok ? 'success=deleted' : 'error=db'));
+        go_flash('/Cinema/schedules', $ok ? 'success' : 'error', $ok ? 'deleted' : 'db');
         break;
 
     default:

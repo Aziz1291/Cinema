@@ -55,6 +55,26 @@ class ReservationModel
         return $stmt->fetchAll() ?: [];
     }
 
+    /** One booking with its screening time, or null. */
+    public function getReservationById($id)
+    {
+        $stmt = $this->db->prepare('
+            SELECT res.id, res.user_id, s.start_time
+            FROM reservations res
+            JOIN schedules s ON res.schedule_id = s.id
+            WHERE res.id = ?
+        ');
+        $stmt->execute([$id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
+    /** Removing the booking frees the seat for that screening. */
+    public function cancelReservation($id)
+    {
+        $stmt = $this->db->prepare('DELETE FROM reservations WHERE id = ?');
+        return $stmt->execute([$id]);
+    }
+
     public function getReservedSeatIdsByScheduleId($schedule_id)
     {
         $query = 'SELECT seat_id FROM reservations WHERE schedule_id = ?';

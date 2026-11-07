@@ -16,8 +16,8 @@ $scheduleModel = new ScheduleModel();
 $schedules     = $film_id > 0 ? $scheduleModel->getSchedulesByFilmId($film_id) : $scheduleModel->getAllSchedules();
 $film          = $film_id > 0 ? (new FilmModel())->getFilmById($film_id) : null;
 
-$success = $_GET['success'] ?? '';
-$error   = $_GET['error']   ?? '';
+$success = flash_take('success');
+$error   = flash_take('error');
 
 // Extract dates for schedule day-strips
 $datesMap = [];

@@ -81,7 +81,7 @@ foreach ($seats as $s) {
         </div>
     </header>
 
-    <?php if (isset($_GET['error']) && $_GET['error'] === 'taken'): ?>
+    <?php if (flash_take('error') === 'taken'): ?>
         <div class="alert alert--error">
             <strong>Booking Collision:</strong> One or more of your chosen seats was just reserved by another guest. Please choose alternative seats.
         </div>

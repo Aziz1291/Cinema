@@ -58,12 +58,30 @@ function validate_fields(array $rules, &$clean)
     return null;
 }
 
+/**
+ * Redirects with a one-time message code. The page shows it once, so a refresh
+ * does not repeat it (codes used to live in the URL as ?success=...).
+ */
+function go_flash($url, $kind, $code)
+{
+    $_SESSION['flash'][$kind] = $code;
+    header('Location: ' . $url);
+    exit;
+}
+
+/** Returns and forgets the one-time message code of this kind ('' if none). */
+function flash_take($kind)
+{
+    $code = $_SESSION['flash'][$kind] ?? '';
+    unset($_SESSION['flash'][$kind]);
+    return $code;
+}
+
 /** Sends the admin back to a list page with a message shown above the list. */
 function fail_to($listUrl, $message)
 {
     $_SESSION['form_error'] = $message;
-    header('Location: ' . $listUrl . '?error=invalid');
-    exit;
+    go_flash($listUrl, 'error', 'invalid');
 }
 
 /** Prints and clears the message saved by fail_to(). */

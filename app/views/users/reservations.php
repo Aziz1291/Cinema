@@ -26,7 +26,13 @@ if ($isAdmin) {
     }
 } else {
     $reservations = $reservationModel->getReservationsByUserId($_SESSION['id']);
+    // Soonest screening first for upcoming tickets, most recent first for past ones.
+    $isFuture = fn($r) => strtotime((string)$r->getStartTime()) >= time();
+    $upcoming = array_reverse(array_values(array_filter($reservations, $isFuture)));
+    $past = array_values(array_filter($reservations, fn($r) => !$isFuture($r)));
 }
+$flashSuccess = flash_take('success');
+$flashError = flash_take('error');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,6 +50,14 @@ if ($isAdmin) {
 <?php require_once __DIR__ . '/../partials/topbar.php'; ?>
 
 <main class="page" id="main-content" tabindex="-1">
+    <?php if ($flashSuccess === 'booked'): ?>
+        <div class="alert alert--success"><strong>✓ Reservation Confirmed!</strong> Your seats have been held and your digital ticket stubs are ready below.</div>
+    <?php elseif ($flashSuccess === 'cancelled'): ?>
+        <div class="alert alert--success">✓ Reservation cancelled. The seat is free again.</div>
+    <?php endif; ?>
+    <?php if ($flashError === 'cancel'): ?>
+        <div class="alert alert--error">⚠ That reservation cannot be cancelled. Only upcoming bookings can be cancelled.</div>
+    <?php endif; ?>
     <?php if ($isAdmin): ?>
         <!-- ── ADMIN CUSTOMER RESERVATIONS VIEW ───────────────────── -->
         <header class="page__header">
@@ -116,6 +130,7 @@ if ($isAdmin) {
                                 <th style="padding:14px 18px;">Auditorium &amp; Seat</th>
                                 <th style="padding:14px 18px;">Status</th>
                                 <th style="padding:14px 18px; text-align:right;">Price</th>
+                                <th style="padding:14px 18px; text-align:right;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -173,6 +188,12 @@ if ($isAdmin) {
                                 <td style="padding:16px 18px; text-align:right; font-weight:700; color:var(--ink); font-family:var(--font-mono);">
                                     $<?php echo number_format($price, 2); ?>
                                 </td>
+                                <td style="padding:16px 18px; text-align:right;">
+                        <form method="post" action="/Cinema/reservations/cancel" style="margin:0;" onsubmit="return confirm('Cancel this reservation? The seat will be released.');">
+                            <?= csrf_field() ?><input type="hidden" name="id" value="<?= $resId ?>">
+                            <button type="submit" class="btn btn--outline btn--sm">Cancel</button>
+                        </form>
+                                </td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -196,11 +217,6 @@ if ($isAdmin) {
             <?php endif; ?>
         </header>
 
-        <?php if (isset($_GET['success']) && $_GET['success'] === '1'): ?>
-            <div class="alert alert--success">
-                <strong>✓ Reservation Confirmed!</strong> Your seats have been held and your digital ticket stubs are ready below.
-            </div>
-        <?php endif; ?>
 
         <?php if (empty($reservations)): ?>
             <div class="stat-card" style="text-align:center; padding:56px 24px; max-width:600px; margin:20px auto;">
@@ -210,15 +226,20 @@ if ($isAdmin) {
                 <a href="/Cinema/films" class="btn btn--primary" style="margin:0 auto;">Browse Now Playing &rarr;</a>
             </div>
         <?php else: ?>
-            <section class="film-grid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));" aria-label="Booked Tickets List">
-                <?php foreach ($reservations as $res):
+            <?php foreach ([['Upcoming', $upcoming], ['Past', $past]] as [$sectionTitle, $sectionItems]): ?>
+            <h3 style="margin:24px 0 12px;"><?php echo $sectionTitle; ?> <span class="muted" style="font-weight:500;">(<?php echo count($sectionItems); ?>)</span></h3>
+            <?php if (!$sectionItems): ?>
+                <p class="muted"><?php echo $sectionTitle === 'Upcoming' ? 'No upcoming screenings booked.' : 'No past screenings yet.'; ?></p>
+            <?php else: ?>
+            <section class="film-grid" style="grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));" aria-label="<?php echo $sectionTitle; ?> tickets">
+                <?php foreach ($sectionItems as $res):
                     $filmTitle = (string)$res->getFilmTitle();
                     $roomName = (string)$res->getRoomName();
                     $startTime = strtotime((string)$res->getStartTime());
                     $seatFull = (string)$res->getRowLetter() . $res->getSeatNumber();
                     $resId = (int)$res->getId();
                 ?>
-                <article class="ticket" aria-label="Ticket for <?php echo htmlspecialchars($filmTitle, ENT_QUOTES, 'UTF-8'); ?>">
+                <article class="ticket"<?php if ($sectionTitle === 'Past') echo ' style="opacity:.65"'; ?> aria-label="Ticket for <?php echo htmlspecialchars($filmTitle, ENT_QUOTES, 'UTF-8'); ?>">
                     <div class="ticket__header">
                         <span class="ticket__brand">Cinema Ticketing</span>
                         <span class="ticket__admit-tag">Admit One</span>
@@ -255,9 +276,17 @@ if ($isAdmin) {
                         <span></span><span></span><span></span><span></span><span></span>
                         <span></span><span></span><span></span><span></span><span></span>
                     </div>
+                    <?php if ($sectionTitle === 'Upcoming'): ?>
+                        <form method="post" action="/Cinema/reservations/cancel" style="margin:0;" onsubmit="return confirm('Cancel this reservation? The seat will be released.');">
+                            <?= csrf_field() ?><input type="hidden" name="id" value="<?= $resId ?>">
+                            <button type="submit" class="btn btn--outline btn--sm">Cancel</button>
+                        </form>
+                    <?php endif; ?>
                 </article>
                 <?php endforeach; ?>
             </section>
+            <?php endif; ?>
+            <?php endforeach; ?>
         <?php endif; ?>
     <?php endif; ?>
 </main>
