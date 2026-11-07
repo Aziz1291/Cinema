@@ -107,12 +107,12 @@ INSERT INTO users (role, username, first_name, last_name, email, password, birth
 -- -------------------------------------------------------------------------
 INSERT INTO films (title, duration, description, created_at, poster_image) VALUES 
 ('Avatar', 162, 'A paraplegic Marine dispatched to the moon Pandora.', CURDATE(), 'Avatar.webp'),
-('Avengers', 143, 'Earths mightiest heroes must come together to save the world.', CURDATE(), 'Avengers-Assembly.jpg'),
+('Avengers', 143, 'Earth''s mightiest heroes must come together to save the world.', CURDATE(), 'Avengers-Assembly.jpg'),
 ('Joker', 122, 'In Gotham City, mentally troubled comedian Arthur Fleck embarks on a downward spiral.', CURDATE(), 'joker.jpg'),
 ('Jurassic Park', 127, 'A pragmatic paleontologist touring an almost complete theme park.', CURDATE(), 'jurassic-park.jpg'),
 ('The Matrix', 136, 'When a beautiful stranger leads computer hacker Neo to a forbidding underworld.', CURDATE(), 'matrix.webp'),
 ('Scream', 111, 'A year after the murder of her mother, a teenage girl is terrorized by a new killer.', CURDATE(), 'Scream.jpg'),
-('Skyfall', 143, 'Bonds loyalty to M is tested when her past comes back to haunt her.', CURDATE(), 'skyfall.jpg'),
+('Skyfall', 143, 'Bond''s loyalty to M is tested when her past comes back to haunt her.', CURDATE(), 'skyfall.jpg'),
 ('Expendables 2', 103, 'Mr. Church reunites the Expendables for what should be an easy paycheck.', CURDATE(), 'the-expendables 2.jpg'),
 ('Little Mermaid', 135, 'A young mermaid makes a deal with a sea witch to trade her beautiful voice.', CURDATE(), 'the-little-mermaid.webp'),
 ('The Truman Show', 103, 'An insurance salesman discovers his whole life is actually a reality TV show.', CURDATE(), 'trauman.webp');
@@ -121,16 +121,16 @@ INSERT INTO films (title, duration, description, created_at, poster_image) VALUE
 -- Rooms (5 Rooms of various sizes)
 -- -------------------------------------------------------------------------
 INSERT INTO rooms (name, rowsNumber, seatsNumber) VALUES 
-('Salle 1 (IMAX)', 6, 60),    -- 6 rows of 10
-('Salle 2 (3D)', 5, 40),      -- 5 rows of 8
-('Salle 3 (Standard)', 4, 32),-- 4 rows of 8
-('Salle 4 (VIP)', 3, 15),     -- 3 rows of 5
-('Salle 5 (Classic)', 5, 50); -- 5 rows of 10
+('Room 1 (IMAX)', 6, 60),    -- 6 rows of 10
+('Room 2 (3D)', 5, 40),      -- 5 rows of 8
+('Room 3 (Standard)', 4, 32),-- 4 rows of 8
+('Room 4 (VIP)', 3, 15),     -- 3 rows of 5
+('Room 5 (Classic)', 5, 50); -- 5 rows of 10
 
 -- -------------------------------------------------------------------------
 -- Seats (Hundreds of seats populated for all rooms)
 -- -------------------------------------------------------------------------
--- Salle 1 (6 rows of 10)
+-- Room 1 (6 rows of 10)
 INSERT INTO seats (room_id, row_letter, seat_number) VALUES 
 (1, 'A', 1), (1, 'A', 2), (1, 'A', 3), (1, 'A', 4), (1, 'A', 5), (1, 'A', 6), (1, 'A', 7), (1, 'A', 8), (1, 'A', 9), (1, 'A', 10),
 (1, 'B', 1), (1, 'B', 2), (1, 'B', 3), (1, 'B', 4), (1, 'B', 5), (1, 'B', 6), (1, 'B', 7), (1, 'B', 8), (1, 'B', 9), (1, 'B', 10),
@@ -139,7 +139,7 @@ INSERT INTO seats (room_id, row_letter, seat_number) VALUES
 (1, 'E', 1), (1, 'E', 2), (1, 'E', 3), (1, 'E', 4), (1, 'E', 5), (1, 'E', 6), (1, 'E', 7), (1, 'E', 8), (1, 'E', 9), (1, 'E', 10),
 (1, 'F', 1), (1, 'F', 2), (1, 'F', 3), (1, 'F', 4), (1, 'F', 5), (1, 'F', 6), (1, 'F', 7), (1, 'F', 8), (1, 'F', 9), (1, 'F', 10);
 
--- Salle 2 (5 rows of 8)
+-- Room 2 (5 rows of 8)
 INSERT INTO seats (room_id, row_letter, seat_number) VALUES 
 (2, 'A', 1), (2, 'A', 2), (2, 'A', 3), (2, 'A', 4), (2, 'A', 5), (2, 'A', 6), (2, 'A', 7), (2, 'A', 8),
 (2, 'B', 1), (2, 'B', 2), (2, 'B', 3), (2, 'B', 4), (2, 'B', 5), (2, 'B', 6), (2, 'B', 7), (2, 'B', 8),
@@ -147,14 +147,14 @@ INSERT INTO seats (room_id, row_letter, seat_number) VALUES
 (2, 'D', 1), (2, 'D', 2), (2, 'D', 3), (2, 'D', 4), (2, 'D', 5), (2, 'D', 6), (2, 'D', 7), (2, 'D', 8),
 (2, 'E', 1), (2, 'E', 2), (2, 'E', 3), (2, 'E', 4), (2, 'E', 5), (2, 'E', 6), (2, 'E', 7), (2, 'E', 8);
 
--- Salle 3 (4 rows of 8)
+-- Room 3 (4 rows of 8)
 INSERT INTO seats (room_id, row_letter, seat_number) VALUES 
 (3, 'A', 1), (3, 'A', 2), (3, 'A', 3), (3, 'A', 4), (3, 'A', 5), (3, 'A', 6), (3, 'A', 7), (3, 'A', 8),
 (3, 'B', 1), (3, 'B', 2), (3, 'B', 3), (3, 'B', 4), (3, 'B', 5), (3, 'B', 6), (3, 'B', 7), (3, 'B', 8),
 (3, 'C', 1), (3, 'C', 2), (3, 'C', 3), (3, 'C', 4), (3, 'C', 5), (3, 'C', 6), (3, 'C', 7), (3, 'C', 8),
 (3, 'D', 1), (3, 'D', 2), (3, 'D', 3), (3, 'D', 4), (3, 'D', 5), (3, 'D', 6), (3, 'D', 7), (3, 'D', 8);
 
--- Salle 4 (VIP) (3 rows of 5)
+-- Room 4 (VIP) (3 rows of 5)
 INSERT INTO seats (room_id, row_letter, seat_number) VALUES 
 (4, 'A', 1), (4, 'A', 2), (4, 'A', 3), (4, 'A', 4), (4, 'A', 5),
 (4, 'B', 1), (4, 'B', 2), (4, 'B', 3), (4, 'B', 4), (4, 'B', 5),
@@ -165,42 +165,42 @@ INSERT INTO seats (room_id, row_letter, seat_number) VALUES
 -- All durations mapped correctly (start_time + duration)
 -- -------------------------------------------------------------------------
 INSERT INTO schedules (film_id, room_id, start_time, end_time, ticket_price) VALUES 
--- Avatar (162 mins) in Salle 1
+-- Avatar (162 mins) in Room 1
 (1, 1, '2026-06-15 14:00:00', '2026-06-15 16:42:00', 15.00),
 (1, 1, '2026-06-15 18:00:00', '2026-06-15 20:42:00', 15.00),
 (1, 1, '2026-06-16 20:30:00', '2026-06-16 23:12:00', 15.00),
 
--- Avengers (143 mins) in Salle 2
+-- Avengers (143 mins) in Room 2
 (2, 2, '2026-06-15 15:30:00', '2026-06-15 17:53:00', 14.50),
 (2, 2, '2026-06-16 18:00:00', '2026-06-16 20:23:00', 14.50),
 
--- Joker (122 mins) in Salle 3
+-- Joker (122 mins) in Room 3
 (3, 3, '2026-06-15 19:00:00', '2026-06-15 21:02:00', 12.00),
 (3, 3, '2026-06-17 21:30:00', '2026-06-17 23:32:00', 12.00),
 
--- Jurassic Park (127 mins) in Salle 4 (VIP)
+-- Jurassic Park (127 mins) in Room 4 (VIP)
 (4, 4, '2026-06-15 20:00:00', '2026-06-15 22:07:00', 25.00),
 (4, 4, '2026-06-18 19:00:00', '2026-06-18 21:07:00', 25.00),
 
--- The Matrix (136 mins) in Salle 1
+-- The Matrix (136 mins) in Room 1
 (5, 1, '2026-06-17 14:00:00', '2026-06-17 16:16:00', 13.00),
 (5, 1, '2026-06-18 18:00:00', '2026-06-18 20:16:00', 13.00),
 
--- Scream (111 mins) in Salle 2
+-- Scream (111 mins) in Room 2
 (6, 2, '2026-06-17 22:00:00', '2026-06-17 23:51:00', 10.00),
 (6, 2, '2026-06-19 23:00:00', '2026-06-20 00:51:00', 10.00),
 
--- Skyfall (143 mins) in Salle 3
+-- Skyfall (143 mins) in Room 3
 (7, 3, '2026-06-16 14:00:00', '2026-06-16 16:23:00', 12.00),
 
--- Expendables 2 (103 mins) in Salle 3
+-- Expendables 2 (103 mins) in Room 3
 (8, 3, '2026-06-16 17:30:00', '2026-06-16 19:13:00', 11.00),
 
--- Little Mermaid (135 mins) in Salle 2
+-- Little Mermaid (135 mins) in Room 2
 (9, 2, '2026-06-15 10:00:00', '2026-06-15 12:15:00', 9.50),
 (9, 2, '2026-06-16 10:00:00', '2026-06-16 12:15:00', 9.50),
 
--- The Truman Show (103 mins) in Salle 4
+-- The Truman Show (103 mins) in Room 4
 (10, 4, '2026-06-16 20:00:00', '2026-06-16 21:43:00', 20.00);
 
 -- -------------------------------------------------------------------------

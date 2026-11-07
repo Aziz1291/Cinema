@@ -21,7 +21,7 @@ if (isset($_SESSION['id'])) {
         $stats['schedules'] = count((new ScheduleModel())->getAllSchedules());
         $stats['reservations'] = count((new ReservationModel())->getAllReservations());
     } else {
-        $stats['films'] = count((new FilmModel())->getAllFilms());
+        $stats['films'] = count((new FilmModel())->getAllFilms('', true));
         $reservations = (new ReservationModel())->getReservationsByUserId($_SESSION['id']);
         $stats['seats'] = count($reservations);
         
@@ -96,32 +96,6 @@ if (isset($_SESSION['id'])) {
             </div>
         </section>
 
-        <!-- Admin Quick Actions -->
-        <div>
-            <h3 style="margin-bottom:14px; font-size:1.1rem; letter-spacing:-0.01em;">Administrative Operations</h3>
-            <section class="nav-grid">
-                <a class="nav-card" href="/Cinema/films">
-                    
-                    <h4 class="nav-card__title">Manage Films</h4>
-                    <p class="nav-card__text">Add new releases, update synopses, and manage posters.</p>
-                </a>
-                <a class="nav-card" href="/Cinema/rooms">
-                    
-                    <h4 class="nav-card__title">Auditorium Rooms</h4>
-                    <p class="nav-card__text">Configure seating matrices, rows, and total room capacity.</p>
-                </a>
-                <a class="nav-card" href="/Cinema/schedules">
-                    
-                    <h4 class="nav-card__title">Screening Sessions</h4>
-                    <p class="nav-card__text">Programme movie showtimes and verify 15-minute gap rules.</p>
-                </a>
-                <a class="nav-card" href="/Cinema/reservations">
-                    
-                    <h4 class="nav-card__title">Customer Bookings</h4>
-                    <p class="nav-card__text">Inspect confirmed reservations, ticket stubs, and seat occupancies.</p>
-                </a>
-            </section>
-        </div>
 
     <?php else: ?>
         <!-- Customer Metrics -->
@@ -161,27 +135,6 @@ if (isset($_SESSION['id'])) {
         </section>
         <?php endif; ?>
 
-        <!-- Customer Navigation -->
-        <div>
-            <h3 style="margin-bottom:14px; font-size:1.1rem; letter-spacing:-0.01em;">Explore Programme</h3>
-            <section class="nav-grid">
-                <a class="nav-card" href="/Cinema/films">
-                    
-                    <h4 class="nav-card__title">Now Playing</h4>
-                    <p class="nav-card__text">Browse the theatrical catalog and select a movie.</p>
-                </a>
-                <a class="nav-card" href="/Cinema/schedules">
-                    
-                    <h4 class="nav-card__title">Sessions &amp; Times</h4>
-                    <p class="nav-card__text">Check upcoming showtimes and choose the best slot.</p>
-                </a>
-                <a class="nav-card" href="/Cinema/reservations">
-                    
-                    <h4 class="nav-card__title">My Reservations</h4>
-                    <p class="nav-card__text">Access your digital ticket stubs and seat numbers.</p>
-                </a>
-            </section>
-        </div>
     <?php endif; ?>
 </main>
 

@@ -12,7 +12,7 @@ class FilmModel
         $this->db = $database->connect();
     }
 
-    public function getAllFilms($search = '')
+    public function getAllFilms($search = '', $onlyWithSessions = false)
     {
         $query = 'SELECT f.*, COUNT(s.id) AS active_sessions_count 
                   FROM films f 
@@ -22,7 +22,11 @@ class FilmModel
             $query .= ' WHERE f.title LIKE ?';
             $params[] = '%' . $search . '%';
         }
-        $query .= ' GROUP BY f.id ORDER BY f.created_at DESC, f.id DESC';
+        $query .= ' GROUP BY f.id';
+        if ($onlyWithSessions) {
+            $query .= ' HAVING COUNT(s.id) > 0';
+        }
+        $query .= ' ORDER BY f.created_at DESC, f.id DESC';
         
         $stmt = $this->db->prepare($query);
         $stmt->execute($params);
