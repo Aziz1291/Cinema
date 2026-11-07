@@ -159,20 +159,24 @@ foreach ($seats as $s) {
                 <?php endforeach; ?>
             </div>
 
+            <?php if ($schedule): /* A legend only makes sense when real booked seats are shown. */ ?>
             <div class="cinema-legend">
                 <div class="cinema-legend__item">
                     <div class="cinema-legend__swatch" style="background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.2);"></div>
                     <span>Available</span>
                 </div>
+                <?php if (!$isAdmin): ?>
                 <div class="cinema-legend__item">
                     <div class="cinema-legend__swatch" style="background:var(--accent); border-color:#93c5fd;"></div>
                     <span>Selected</span>
                 </div>
+                <?php endif; ?>
                 <div class="cinema-legend__item">
                     <div class="cinema-legend__swatch" style="background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.05);"></div>
                     <span>Occupied</span>
                 </div>
             </div>
+            <?php endif; ?>
 
             <?php if ($schedule && !$isAdmin): ?>
             <!-- Floating Reservation Dock -->

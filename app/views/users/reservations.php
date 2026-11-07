@@ -13,11 +13,13 @@ $reservationModel = new ReservationModel();
 
 if ($isAdmin) {
     $reservations = $reservationModel->getAllReservations($search);
-    $totalCount = count($reservations);
+    // The tiles always describe every booking, whatever the search box says.
+    $everyReservation = $search === '' ? $reservations : $reservationModel->getAllReservations();
+    $totalCount = count($everyReservation);
     $activeCount = 0;
     $totalRevenue = 0.0;
     $now = time();
-    foreach ($reservations as $r) {
+    foreach ($everyReservation as $r) {
         $st = strtotime((string)$r->getStartTime());
         if ($st >= $now) {
             $activeCount++;
@@ -104,7 +106,7 @@ $flashError = flash_take('error');
                 <?php endif; ?>
             </form>
             <?php if (!empty($search)): ?>
-                <p class="muted" style="font-size:0.9rem;">Filtering by: <strong>&ldquo;<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>&rdquo;</strong> (<?php echo $totalCount; ?> found)</p>
+                <p class="muted" style="font-size:0.9rem;">Filtering by: <strong>&ldquo;<?php echo htmlspecialchars($search, ENT_QUOTES, 'UTF-8'); ?>&rdquo;</strong> (<?php echo count($reservations); ?> found)</p>
             <?php endif; ?>
         </div>
 
@@ -119,9 +121,9 @@ $flashError = flash_take('error');
             </div>
         <?php else: ?>
             <!-- Desktop / Tablet Table View -->
-            <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-subtle);">
+            <div class="res-wrap" style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow-subtle);">
                 <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.92rem;">
+                    <table class="res-table" style="width:100%; border-collapse:collapse; text-align:left; font-size:0.92rem;">
                         <thead>
                             <tr style="background:var(--tint); border-bottom:1px solid var(--line); color:var(--muted); font-size:0.8rem; text-transform:uppercase; letter-spacing:0.04em;">
                                 <th style="padding:14px 18px;">Stub ID</th>
@@ -148,10 +150,10 @@ $flashError = flash_take('error');
                                 $initial = strtoupper(substr($custName, 0, 1));
                             ?>
                             <tr style="border-bottom:1px solid var(--line); transition:background 0.15s ease;">
-                                <td style="padding:16px 18px; font-family:var(--font-mono); font-weight:700; color:var(--ink);">
+                                <td data-label="Stub ID" style="padding:16px 18px; font-family:var(--font-mono); font-weight:700; color:var(--ink);">
                                     #CNM-<?php echo str_pad((string)$resId, 5, '0', STR_PAD_LEFT); ?>
                                 </td>
-                                <td style="padding:16px 18px;">
+                                <td data-label="Customer" style="padding:16px 18px;">
                                     <div style="display:flex; align-items:center; gap:10px;">
                                         <div style="width:34px; height:34px; border-radius:var(--radius-full); background:var(--ink); color:#fff; display:grid; place-items:center; font-weight:700; font-size:0.85rem; flex-shrink:0;">
                                             <?php echo htmlspecialchars($initial, ENT_QUOTES, 'UTF-8'); ?>
@@ -162,19 +164,19 @@ $flashError = flash_take('error');
                                         </div>
                                     </div>
                                 </td>
-                                <td style="padding:16px 18px;">
+                                <td data-label="Film &amp; Showtime" style="padding:16px 18px;">
                                     <div style="font-weight:600; color:var(--ink);"><?php echo htmlspecialchars($filmTitle, ENT_QUOTES, 'UTF-8'); ?></div>
                                     <div class="muted" style="font-size:0.82rem; margin-top:2px;">
                                          <?php echo date('D, M j, Y', $startTime) . ' &middot; ' . date('H:i', $startTime); ?>
                                     </div>
                                 </td>
-                                <td style="padding:16px 18px;">
+                                <td data-label="Auditorium &amp; Seat" style="padding:16px 18px;">
                                     <div style="font-weight:500;"> <?php echo htmlspecialchars($roomName, ENT_QUOTES, 'UTF-8'); ?></div>
                                     <span class="film-card__tag" style="background:var(--tint); color:var(--ink); font-weight:700; font-family:var(--font-mono); margin-top:4px; display:inline-block;">
                                         Row <?php echo htmlspecialchars((string)$res->getRowLetter(), ENT_QUOTES, 'UTF-8'); ?> &middot; Seat <?php echo (int)$res->getSeatNumber(); ?>
                                     </span>
                                 </td>
-                                <td style="padding:16px 18px;">
+                                <td data-label="Status" style="padding:16px 18px;">
                                     <?php if ($isUpcoming): ?>
                                         <span class="film-card__tag tone-olive">
                                             &#9679; Confirmed Upcoming
@@ -185,10 +187,10 @@ $flashError = flash_take('error');
                                         </span>
                                     <?php endif; ?>
                                 </td>
-                                <td style="padding:16px 18px; text-align:right; font-weight:700; color:var(--ink); font-family:var(--font-mono);">
+                                <td data-label="Price" style="padding:16px 18px; text-align:right; font-weight:700; color:var(--ink); font-family:var(--font-mono);">
                                     $<?php echo number_format($price, 2); ?>
                                 </td>
-                                <td style="padding:16px 18px; text-align:right;">
+                                <td data-label="Actions" style="padding:16px 18px; text-align:right;">
                         <form method="post" action="/Cinema/reservations/cancel" style="margin:0;" onsubmit="return confirm('Cancel this reservation? The seat will be released.');">
                             <?= csrf_field() ?><input type="hidden" name="id" value="<?= $resId ?>">
                             <button type="submit" class="btn btn--outline btn--sm">Cancel</button>

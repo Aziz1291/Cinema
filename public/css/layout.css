@@ -1484,3 +1484,74 @@ p {
         display: none !important;
     }
 }
+
+/* ── 17. Phone layouts and full-height sidebar ──────────── */
+@media (min-width: 993px) {
+    /* The fixed sidebar only covers the window; paint its column on the page itself so it fills the full height. */
+    body {
+        background-image: linear-gradient(to right, var(--surface) 0, var(--surface) 259px, var(--line) 259px, var(--line) 260px, transparent 260px);
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
+}
+.sidebar { height: 100vh; height: 100dvh; }
+
+@media (max-width: 640px) {
+    /* Reservations table becomes one card per booking */
+    .res-wrap { background: transparent !important; border: 0 !important; box-shadow: none !important; overflow: visible !important; }
+    .res-wrap > div { overflow: visible !important; }
+    .res-table, .res-table tbody, .res-table tr, .res-table td { display: block; width: 100%; }
+    .res-table thead { display: none; }
+    .res-table tr {
+        background: var(--surface);
+        border: 1px solid var(--line) !important;
+        border-radius: var(--radius-lg);
+        padding: 8px 16px;
+        margin-bottom: 14px;
+        box-shadow: var(--shadow-subtle);
+    }
+    .res-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 10px 0 !important;
+        text-align: right !important;
+        border-bottom: 1px solid var(--line);
+    }
+    .res-table td:last-child { border-bottom: 0; }
+    .res-table td::before {
+        content: attr(data-label);
+        flex-shrink: 0;
+        color: var(--muted);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        text-align: left;
+    }
+    .res-table td > * { min-width: 0; text-align: right; }
+    .res-table td form { width: 100%; }
+    .res-table td form .btn { width: 100%; }
+
+    /* Seat map: the rows scroll sideways inside their own box, row letters stay put */
+    .cinema-hall { padding: 24px 12px 28px; align-items: stretch; overflow-x: visible; }
+    .cinema-rows { position: relative; overflow-x: auto; max-width: 100%; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+    .cinema-row { width: max-content; min-width: 100%; gap: 8px; }
+    .cinema-row__seats { gap: 6px; }
+    .cinema-seat { width: 44px; height: 44px; font-size: 0.8rem; }
+    .cinema-row__label { width: 28px; }
+    .cinema-row > .cinema-row__label:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background: var(--cinema-midnight);
+        align-self: stretch;
+        display: grid;
+        place-items: center;
+    }
+
+    /* Tap targets of at least 44px */
+    .btn, .btn--sm { min-height: 44px; }
+    .menu-trigger, .sidebar__close-btn { min-width: 44px; min-height: 44px; }
+}
